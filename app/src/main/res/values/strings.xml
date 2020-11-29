@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">MyBase</string>
+    <string name="pass_recovery">Восстановление пароля</string>
+    <string name="pass_recovery_text">Отправьте любую информацию которая поможет восстановить ваш аккаунт:
+примерный email-адрес, имя пользователя, пароль, последняя дата входа и т.п.</string>
+    <string name="create_new_acc">Создать новый аккаунт</string>
+    <string name="exit"><u>Выход</u></string>
+    <string name="app_name_discription">Помощник в изучении Английского языка</string>
+    <string name="registration">Регистрация</string>
+    <string name="name">Имя</string>
+    <string name="enter_name">Введите Имя</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="enter_password">Введите пароль</string>
+    <string name="have_account">Уже есть аккаунт?</string>
+    <string name="enter">Войти</string>
+    <string name="reg_btn">Зарегистрироваться</string>
+    <string name="enter_email">Введите email</string>
+    <string name="send_support">Написать в тех.поддержку</string>
+    <string name="back">Назад</string>
+    <string name="auth">Авторизация</string>
+    <string name="forgot_pass"><u>Забыли Пароль?</u></string>
+    <string name="first_visit">Впервые здесь?</string>
+    <string name="registration_link"><u>Регистрация</u></string>
+    <string name="accept_registration">Подтверждение регистрации</string>
+    <string name="push_code">Введите проверочный код из СМС для завершения регистрации</string>
+    <string name="send_code_again">Отправить код повторно</string>
+    <string name="menu"><u>Меню</u></string>
+    <string name="stat">Статистика</string>
+    <string name="quit">Выйти</string>
+    <string name="enru">Перевод английский => Русский</string>
+    <string name="ruen">Перевод Русский => Английский</string>
+    <string name="grammar">Грамматика</string>
+    <string name="sentens">Составление предложений</string>
+    <string name="phrase_verb">Фразовые глаголы</string>
+    <string name="rec">Рекомендация:</string>
+    <string name="text_rec">Уделите больше времени грамматике</string>
+    <string name="words">Слова</string>
+    <string name="word_discr">Пополнить словарный запас или повторить изученные слова. Добавить свои слова</string>
+    <string name="sentens_and_phrase">Предложения и фразы</string>
+    <string name="sentens_and_phrase_discr">Частоупотребляемые фразы и предложения. Добавляй свои предложения</string>
+    <string name="grammar_discr">Изучение грамматики. Правила составления предложений и другое</string>
+    <string name="phrase_verb_descr">Изучайте популярные фразовые глаголы</string>
+    <string name="congrad">Поздравляем с регистрацией!</string>
+    <string name="cangrad_descr">Теперь вы можете приступить к работе</string>
+    <string name="enru_menu">Английский  => Русский</string>
+    <string name="ruen_menu">Русский => Английский</string>
+    <string name="add_word">Добавить слово</string>
+    <string name="trans_to_en">Переведите на английский</string>
+    <string name="write_here">Напишите здесь перевод</string>
+    <string name="trans_word">Переведите слово:</string>
+    <string name="modul_no_work">Данный модуль
+находится в разработке</string>
+    <string name="trans_phrase_verb">Переведите фразовый глагол:</string>
+    <string name="add_word2">Добавление слов:</string>
+    <string name="english">English</string>
+    <string name="russian">Русский</string>
+    <string name="trans">Транскрибция</string>
+    <string name="begin">Начать</string>
+    <string name="contin">Продолжить</string>
+    <string name="push_code_discr">Введите проверочный код</string>
+    <string name="trans_hint">Напишите здесь перевод</string>
+    <string name="btn_next">Проверить</string>
+    <string name="btn_pass">Пропустить</string>
+    <string name="phone">Телефон</string>
+</resources>
