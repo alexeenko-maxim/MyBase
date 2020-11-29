@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "428259993018",
+    "firebase_url": "https://mybase-afb06.firebaseio.com",
+    "project_id": "mybase-afb06",
+    "storage_bucket": "mybase-afb06.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:428259993018:android:dc55b080701aabac07e983",
+        "android_client_info": {
+          "package_name": "braingame.amax.mybase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "428259993018-ms626pvjq0rkf66qv05v9tf4qcfilvs0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "braingame.amax.mybase",
+            "certificate_hash": "e7682775107e56b5ddb4e14723fa2c24f41bcf0d"
+          }
+        },
+        {
+          "client_id": "428259993018-uqckn1u8rd5kjp6bbsiaojsjnjdhp5ac.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmT8LOGVcFNUkU5O-IMdkCUYcLlGN7_kQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "428259993018-uqckn1u8rd5kjp6bbsiaojsjnjdhp5ac.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
