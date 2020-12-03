@@ -16,6 +16,8 @@ import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
+
+import braingame.amax.mybase.Models.DB;
 import braingame.amax.mybase.R;
 
 
@@ -25,11 +27,12 @@ public class ActivityRegistration extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        
+        final DB userName = new DB();
         //---Обьявление переменных с привязкой 
         final EditText mInputPhoneField = findViewById(R.id.phone_number_text);
         final Button mButtonSendPhone = findViewById(R.id.button_send_phone);
         final ProgressBar mProgressBar = findViewById(R.id.progress_Bar);
+        final EditText mUserNameField = findViewById(R.id.input_userName_field);
         //---
         
         //---События по нажатию кнопки Зарегистрировать
@@ -39,7 +42,12 @@ public class ActivityRegistration extends Activity {
                 @Override
                 public void onClick(View v){
                     //---Если поле пустое ничего не делать
-                    if (mInputPhoneField.getText().toString().trim().isEmpty()){
+                    if (mUserNameField.getText().toString().isEmpty()){
+                        Toast.makeText(ActivityRegistration.this, "Введите Имя пользователя", Toast.LENGTH_SHORT ).show();
+                        return;
+                    }
+
+                    else if (mInputPhoneField.getText().toString().trim().isEmpty()){
                         Toast.makeText(ActivityRegistration.this, "Введите номер телефона", Toast.LENGTH_SHORT ).show();
                         return;
                     }
@@ -74,6 +82,7 @@ public class ActivityRegistration extends Activity {
                                     Intent intent = new Intent(getApplicationContext(), ActivityVerify.class);
                                     intent.putExtra("mobile", mInputPhoneField.getText().toString());
                                     intent.putExtra("verificationId", verificationId);
+                                    userName.setUserName(mUserNameField.getText().toString());
                                     startActivity(intent);
                                 }
                             }

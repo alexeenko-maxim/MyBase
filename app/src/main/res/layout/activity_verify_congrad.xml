@@ -37,7 +37,7 @@
             android:textSize="18sp" />
 
         <Button
-            android:id="@+id/mBtn_reg"
+            android:id="@+id/btn_go_to_main_menu"
             android:layout_width="wrap_content"
             android:layout_height="50dp"
             android:layout_gravity="center_horizontal"

@@ -34,7 +34,7 @@ public class ActivityVerify extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_verify_);
+        setContentView(R.layout.activity_verify);
 
         TextView mTextMobile = findViewById(R.id.text_mobile);
 
@@ -46,6 +46,7 @@ public class ActivityVerify extends AppCompatActivity {
         mInputCode4 = findViewById(R.id.input_code_4);
         mInputCode5 = findViewById(R.id.input_code_5);
         mInputCode6 = findViewById(R.id.input_code_6);
+        TextView mBtnGoBack = findViewById(R.id.btn_go_back);
 
         setupCodeInput();
 
@@ -57,6 +58,7 @@ public class ActivityVerify extends AppCompatActivity {
         mVerifyBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //---Проверка на пустые поля---
                 if (mInputCode1.getText().toString().isEmpty()
                         || mInputCode2.getText().toString().isEmpty()
                         || mInputCode3.getText().toString().isEmpty()
@@ -66,7 +68,7 @@ public class ActivityVerify extends AppCompatActivity {
                     Toast.makeText(ActivityVerify.this, "Введите проверочный код", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                //---Склейка всех полей в одну строку---
                 String code = mInputCode1.getText().toString() +
                         mInputCode2.getText().toString() +
                         mInputCode3.getText().toString() +
@@ -88,7 +90,8 @@ public class ActivityVerify extends AppCompatActivity {
                                         Intent intent = new Intent(getApplicationContext(), ActivityVerifyCongrad.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);
-                                    } else {
+                                    }
+                                    else {
                                         Toast.makeText(ActivityVerify.this, "Введен неверный проверочный код", Toast.LENGTH_SHORT).show();
                                     }
                                 }
@@ -97,36 +100,55 @@ public class ActivityVerify extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.text_resend).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                PhoneAuthProvider.getInstance().verifyPhoneNumber(
-                        "+7" + getIntent().getStringExtra("mobile"), 60, TimeUnit.SECONDS, ActivityVerify.this,
-                        new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+        try {
+            findViewById(R.id.text_resend).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                            "+7" + getIntent().getStringExtra("mobile"), 60, TimeUnit.SECONDS, ActivityVerify.this,
+                            new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
-                            @Override
-                            public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
+                                @Override
+                                public void onVerificationCompleted(@NonNull PhoneAuthCredential phoneAuthCredential) {
 
+                                }
+
+                                @Override
+                                public void onVerificationFailed(@NonNull FirebaseException e) {
+
+                                    Toast.makeText(ActivityVerify.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onCodeSent(@NonNull String newVerificationId, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
+                                    verificationId = newVerificationId;
+                                    Toast.makeText(ActivityVerify.this, "Код отправлен", Toast.LENGTH_SHORT).show();
+
+                                }
                             }
+                    );
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
-                            @Override
-                            public void onVerificationFailed(@NonNull FirebaseException e) {
-
-                                Toast.makeText(ActivityVerify.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-
-                            @Override
-                            public void onCodeSent(@NonNull String newVerificationId, @NonNull PhoneAuthProvider.ForceResendingToken forceResendingToken) {
-                                verificationId = newVerificationId;
-                                Toast.makeText(ActivityVerify.this, "Код отправлен", Toast.LENGTH_SHORT).show();
-
-                            }
-                        }
-                );
-            }
-        });
-
-
+        try {
+            mBtnGoBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent goToAuth = new Intent(ActivityVerify.this, ActivityRegistration.class);
+                    goToAuth.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    goToAuth.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(goToAuth);
+                    finish();
+                }
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setupCodeInput() {
