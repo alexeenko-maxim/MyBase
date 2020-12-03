@@ -23,7 +23,8 @@
     <string name="first_visit">Впервые здесь?</string>
     <string name="registration_link"><u>Регистрация</u></string>
     <string name="accept_registration">Подтверждение регистрации</string>
-    <string name="push_code">Введите проверочный код из СМС для завершения регистрации</string>
+    <string name="push_code1">На номер</string>
+    <string name="push_code2">было отправлено SMS с кодом авторизации, введите его в поля ниже для завершения регистрации</string>
     <string name="send_code_again">Отправить код повторно</string>
     <string name="menu"><u>Меню</u></string>
     <string name="stat">Статистика</string>

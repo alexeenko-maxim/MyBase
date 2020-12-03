@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="braingame.amax.mybase">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,7 +11,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+
+        <!--  Список активити /-->
+        <activity android:name=".Controllers.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -17,15 +21,34 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".RegistrationActivity"
-                    android:label="RegistrationActivity">
-
+        <activity android:name=".Controllers.ActivityRegistration"
+            android:label="ActivityRegistration">
         </activity>
 
-        <activity android:name=".ConfirmRegistrationActivity"
-            android:label="ConfirmRegistrationActivity">
-
+        <activity android:name=".Controllers.ActivityVerify"
+                  android:label="ActivityVerify">
         </activity>
+
+        <activity android:name=".Controllers.ActivityVerifyCongrad"
+            android:label="ActivityVerifyCongrad">
+        </activity>
+
+
+        <activity android:name=".Controllers.ActivityMenu"
+            android:label="ActivityMenu">
+        </activity>
+
+
+
+<!--        <activity android:name=".ActivityVerify"-->
+<!--            android:label="ActivityVerify">-->
+<!--        </activity>-->
+<!--        <activity android:name=".ActivityVerify"-->
+<!--            android:label="ActivityVerify">-->
+<!--        </activity>-->
+<!--        <activity android:name=".ActivityVerify"-->
+<!--            android:label="ActivityVerify">-->
+<!--        </activity>-->
 
     </application>
 
