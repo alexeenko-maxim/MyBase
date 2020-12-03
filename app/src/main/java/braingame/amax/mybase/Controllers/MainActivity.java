@@ -30,12 +30,10 @@ public class MainActivity extends AppCompatActivity {
             mBtnStart.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
-    //                mAuth.signOut();
+                    //---Если пользователь не найден > выполнить метод перехода на страницу регистрации
                     if (mCurrentUser == null) sendUserToLogin();
+                    //---Иначе выполнить метод перехода в главное меню
                     else sendUserToMainMenu();
-
-
                 }
             });
         }
@@ -45,14 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        if(mCurrentUser == null){
-//            sendUserToLogin();
-//        }
-//    }
-
+    //---Метод перехода на страницу регистрации---
     private void sendUserToLogin() {
         Intent loginIntent = new Intent(MainActivity.this, ActivityRegistration.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -60,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         startActivity(loginIntent);
         finish();
     }
-
+    //---Метод перехода на страницу главного меню---
     private void sendUserToMainMenu() {
         Intent goToMenu = new Intent(MainActivity.this, ActivityMenu.class);
         goToMenu.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

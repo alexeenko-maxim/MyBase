@@ -6,6 +6,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -13,7 +14,9 @@
         android:theme="@style/AppTheme">
 
         <!--  Список активити /-->
-        <activity android:name=".Controllers.MainActivity">
+        <activity android:name=".Controllers.MainActivity"
+                    android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,20 +25,28 @@
         </activity>
 
         <activity android:name=".Controllers.ActivityRegistration"
-            android:label="ActivityRegistration">
+            android:label="ActivityRegistration"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
         <activity android:name=".Controllers.ActivityVerify"
-                  android:label="ActivityVerify">
+                  android:label="ActivityVerify"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
         <activity android:name=".Controllers.ActivityVerifyCongrad"
-            android:label="ActivityVerifyCongrad">
+            android:label="ActivityVerifyCongrad"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
 
         <activity android:name=".Controllers.ActivityMenu"
-            android:label="ActivityMenu">
+            android:label="ActivityMenu"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
         </activity>
 
 
