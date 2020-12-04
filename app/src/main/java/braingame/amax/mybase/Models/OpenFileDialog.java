@@ -17,12 +17,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.*;
 
-/**
- * Created with IntelliJ IDEA.
- * User: Scogun
- * Date: 27.11.13
- * Time: 10:47
- */
+
 public class OpenFileDialog extends AlertDialog.Builder {
 
     private String currentPath = Environment.getExternalStorageDirectory().getPath();

@@ -2,10 +2,11 @@ package braingame.amax.mybase.Models;
 
 public class DB {
 
-    private String userName;
+    private static String userName;
+
     private String userPhoneNumber;
 
-    public String getUserName() {
+    public static String getUserName() {
         return userName;
     }
 

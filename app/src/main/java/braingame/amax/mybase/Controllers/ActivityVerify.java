@@ -22,9 +22,12 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import braingame.amax.mybase.R;
+
+import static braingame.amax.mybase.Models.HelpFunction.*;
 
 public class ActivityVerify extends AppCompatActivity {
 
@@ -35,6 +38,8 @@ public class ActivityVerify extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify);
+
+
 
         TextView mTextMobile = findViewById(R.id.text_mobile);
 
@@ -50,6 +55,9 @@ public class ActivityVerify extends AppCompatActivity {
 
         setupCodeInput();
 
+        checkIsEmpty(mInputCode1,mInputCode2,mInputCode3,mInputCode4,mInputCode5,mInputCode6);
+
+
         final ProgressBar mProgressBar = findViewById(R.id.progress_bar);
         final Button mVerifyBtn = findViewById(R.id.verify_btn);
 
@@ -59,12 +67,7 @@ public class ActivityVerify extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //---Проверка на пустые поля---
-                if (mInputCode1.getText().toString().isEmpty()
-                        || mInputCode2.getText().toString().isEmpty()
-                        || mInputCode3.getText().toString().isEmpty()
-                        || mInputCode4.getText().toString().isEmpty()
-                        || mInputCode5.getText().toString().isEmpty()
-                        || mInputCode6.getText().toString().isEmpty()) {
+                if (checkIsEmpty(mInputCode1,mInputCode2,mInputCode3,mInputCode4,mInputCode5,mInputCode6)) {
                     Toast.makeText(ActivityVerify.this, "Введите проверочный код", Toast.LENGTH_SHORT).show();
                     return;
                 }
