@@ -1,18 +1,22 @@
 package braingame.amax.mybase.Controllers;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.logging.Logger;
 
 import braingame.amax.mybase.R;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final Logger logger = Logger.getGlobal();
 
     private FirebaseUser mCurrentUser;
 
@@ -20,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        logger.info("поехали");
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mCurrentUser = mAuth.getCurrentUser();

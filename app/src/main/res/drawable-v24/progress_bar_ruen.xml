@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/bar_background">
+        <shape>
+            <corners android:radius="2dp" />
+            <gradient android:startColor="#70000000"
+                android:centerColor="#70000000"
+                android:endColor="#70000000"
+                android:centerY="0.75"
+                android:angle="270" />
+        </shape>
+    </item>
+    <item android:id="@+id/bar_value">
+        <clip>
+            <shape>
+                <corners android:radius="2dp" />
+                <gradient android:startColor="#5B5BF5"
+                    android:centerColor="#5B5BF5"
+                    android:endColor="#5B5BF5"
+                    android:centerY="0.75"
+                    android:angle="270" />
+            </shape>
+        </clip>
+    </item>
+</layer-list>

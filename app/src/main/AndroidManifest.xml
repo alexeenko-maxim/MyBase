@@ -15,8 +15,9 @@
         android:theme="@style/AppTheme">
 
         <!--  Список активити /-->
-        <activity android:name=".Controllers.MainActivity"
-                    android:screenOrientation="portrait"
+        <activity
+            android:name=".Controllers.MainActivity"
+            android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,31 +26,78 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".Controllers.ActivityRegistration"
+        <activity
+            android:name=".Controllers.ActivityRegistration"
             android:label="ActivityRegistration"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".Controllers.ActivityVerify"
-                  android:label="ActivityVerify"
+        <activity
+            android:name=".Controllers.ActivityVerify"
+            android:label="ActivityVerify"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
 
-        <activity android:name=".Controllers.ActivityVerifyCongrad"
+        <activity
+            android:name=".Controllers.ActivityVerifyCongrad"
             android:label="ActivityVerifyCongrad"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
 
 
-        <activity android:name=".Controllers.ActivityMenu"
+        <activity
+            android:name=".Controllers.ActivityMenu"
             android:label="ActivityMenu"
             android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize">
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
 
+        <activity
+            android:name=".Controllers.ActivityGrammar"
+            android:label="ActivityGrammar"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".Controllers.ActivityPhraseVerb"
+            android:label="ActivityPhraseVerb"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".Controllers.ActivitySentens"
+            android:label="ActivitySentens"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".Controllers.ActivityStatistic"
+            android:label="ActivityStatistic"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".Controllers.ActivityWords"
+            android:label="ActivityWords"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".Controllers.ActivityWordsAdd"
+            android:label="ActivityWordsAdd"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".Controllers.ActivityWordsEnRu"
+            android:label="ActivityWordsEnRu"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".Controllers.ActivityWordsRuEn"
+            android:label="ActivityWordsRuEn"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize" />
 
 
     </application>

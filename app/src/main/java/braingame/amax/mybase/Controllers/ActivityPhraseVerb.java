@@ -9,21 +9,21 @@ import androidx.appcompat.app.AppCompatActivity;
 import braingame.amax.mybase.Models.OpenFileDialog;
 import braingame.amax.mybase.R;
 
-public class ActivityMenu extends AppCompatActivity {
+public class ActivityPhraseVerb extends AppCompatActivity {
 
-
+    Button mAddAvatar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_menu);
+        setContentView(R.layout.activity_phrase_verb);
 
 
-        Button mAddAvatar = findViewById(R.id.btn_add_avatar);
+        mAddAvatar = findViewById(R.id.btn_add_avatar);
         mAddAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                OpenFileDialog fileDialog = new OpenFileDialog(ActivityMenu.this);
+                OpenFileDialog fileDialog = new OpenFileDialog(ActivityPhraseVerb.this);
                 fileDialog.show();
             }
         });
