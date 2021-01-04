@@ -73,7 +73,7 @@
             android:textSize="24sp" />
 
         <TextView
-            android:id="@+id/textView26"
+            android:id="@+id/textViewEn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -85,7 +85,7 @@
             android:textSize="30sp" />
 
         <EditText
-            android:id="@+id/editTextTextPersonName2"
+            android:id="@+id/input_ru_answer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
@@ -102,7 +102,7 @@
             android:padding="10dp">
 
             <Button
-                android:id="@+id/button12"
+                android:id="@+id/btn_miss_word"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
@@ -113,7 +113,7 @@
                 android:textSize="18sp" />
 
             <Button
-                android:id="@+id/button11"
+                android:id="@+id/btn_check_answer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -122,6 +122,8 @@
                 android:text="@string/btn_next"
                 android:textColor="#FFFFFF"
                 android:textSize="18sp" />
+
+
         </LinearLayout>
 
     </LinearLayout>

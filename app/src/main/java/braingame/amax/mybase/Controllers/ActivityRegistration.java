@@ -82,7 +82,7 @@ public class ActivityRegistration extends Activity {
                                     Intent intent = new Intent(getApplicationContext(), ActivityVerify.class);
                                     intent.putExtra("mobile", mInputPhoneField.getText().toString());
                                     intent.putExtra("verificationId", verificationId);
-                                    userName.setUserName(mUserNameField.getText().toString());
+//                                    userName.setUserName(mUserNameField.getText().toString());
                                     startActivity(intent);
                                 }
                             }

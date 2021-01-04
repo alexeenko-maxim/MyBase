@@ -10,13 +10,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import java.util.logging.Logger;
-
 import braingame.amax.mybase.R;
 
-public class MainActivity extends AppCompatActivity {
+public class ActivityMain extends AppCompatActivity {
 
-    private static final Logger logger = Logger.getGlobal();
+
 
     private FirebaseUser mCurrentUser;
 
@@ -24,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        logger.info("поехали");
 
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mCurrentUser = mAuth.getCurrentUser();
@@ -51,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     //---Метод перехода на страницу регистрации---
     private void sendUserToLogin() {
-        Intent loginIntent = new Intent(MainActivity.this, ActivityRegistration.class);
+        Intent loginIntent = new Intent(ActivityMain.this, ActivityRegistration.class);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(loginIntent);
@@ -59,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     }
     //---Метод перехода на страницу главного меню---
     private void sendUserToMainMenu() {
-        Intent goToMenu = new Intent(MainActivity.this, ActivityMenu.class);
+        Intent goToMenu = new Intent(ActivityMain.this, ActivityMenu.class);
         goToMenu.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         goToMenu.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(goToMenu);

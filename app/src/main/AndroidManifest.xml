@@ -16,7 +16,7 @@
 
         <!--  Список активити /-->
         <activity
-            android:name=".Controllers.MainActivity"
+            android:name=".Controllers.ActivityWords"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -75,11 +75,11 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
 
-        <activity
-            android:name=".Controllers.ActivityWords"
-            android:label="ActivityWords"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustResize" />
+<!--        <activity-->
+<!--            android:name=".Controllers.ActivityWords"-->
+<!--            android:label="ActivityWords"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:windowSoftInputMode="adjustResize" />-->
 
         <activity
             android:name=".Controllers.ActivityWordsAdd"

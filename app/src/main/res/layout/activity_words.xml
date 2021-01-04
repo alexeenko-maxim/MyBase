@@ -53,7 +53,7 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/button5"
+            android:id="@+id/btn_add_avatar"
             android:layout_width="130dp"
             android:layout_height="130dp"
             android:layout_gravity="center_horizontal"
@@ -78,7 +78,7 @@
                 android:textSize="20sp" />
 
             <Button
-                android:id="@+id/button6"
+                android:id="@+id/btn_go_learnEnRu"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:background="@drawable/chevronright" />
@@ -104,7 +104,7 @@
                 android:textSize="20sp" />
 
             <Button
-                android:id="@+id/button7"
+                android:id="@+id/btn_go_learnRuEn"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:background="@drawable/chevronright" />
@@ -127,7 +127,7 @@
                 android:textSize="20sp" />
 
             <Button
-                android:id="@+id/button8"
+                android:id="@+id/btn_go_add_word"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
                 android:background="@drawable/chevronright" />

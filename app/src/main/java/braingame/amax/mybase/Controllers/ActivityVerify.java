@@ -22,12 +22,11 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 
-import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import braingame.amax.mybase.R;
 
-import static braingame.amax.mybase.Models.HelpFunction.*;
+import static braingame.amax.mybase.Models.HelpFunction.checkIsEmpty;
 
 public class ActivityVerify extends AppCompatActivity {
 

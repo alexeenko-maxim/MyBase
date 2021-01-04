@@ -1,5 +1,6 @@
 package braingame.amax.mybase.Controllers;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -11,6 +12,9 @@ import braingame.amax.mybase.R;
 
 public class ActivityMenu extends AppCompatActivity {
 
+    SharedPreferences sPref = null;
+
+
 
 
     @Override
@@ -18,6 +22,7 @@ public class ActivityMenu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
+        sPref = getSharedPreferences("braingame.amax.mybase", MODE_PRIVATE);
 
         Button mAddAvatar = findViewById(R.id.btn_add_avatar);
         mAddAvatar.setOnClickListener(new View.OnClickListener() {
@@ -29,5 +34,6 @@ public class ActivityMenu extends AppCompatActivity {
         });
 
     }
+
 
 }

@@ -1,5 +1,6 @@
 package braingame.amax.mybase.Models;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,20 +11,33 @@ import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
-import android.view.*;
-import android.widget.*;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 
 public class OpenFileDialog extends AlertDialog.Builder {
 
     private String currentPath = Environment.getExternalStorageDirectory().getPath();
-    private List<File> files = new ArrayList<File>();
-    private TextView title;
-    private ListView listView;
+    private final List<File> files = new ArrayList<File>();
+    private final TextView title;
+    private final ListView listView;
     private FilenameFilter filenameFilter;
     private int selectedIndex = -1;
     private OpenDialogListener listener;
@@ -193,13 +207,12 @@ public class OpenFileDialog extends AlertDialog.Builder {
     }
 
     private TextView createTitle(Context context) {
-        TextView textView = createTextView(context, android.R.style.TextAppearance_DeviceDefault_DialogWindowTitle);
-        return textView;
+        return createTextView(context, android.R.style.TextAppearance_DeviceDefault_DialogWindowTitle);
     }
 
     private TextView createBackItem(Context context) {
         TextView textView = createTextView(context, android.R.style.TextAppearance_DeviceDefault_Small);
-        Drawable drawable = getContext().getResources().getDrawable(android.R.drawable.ic_menu_directions);
+        @SuppressLint("UseCompatLoadingForDrawables") Drawable drawable = getContext().getResources().getDrawable(android.R.drawable.ic_menu_directions);
         drawable.setBounds(0, 0, 60, 60);
         textView.setCompoundDrawables(drawable, null, null, null);
         textView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
