@@ -17,9 +17,10 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Objects;
 
 import braingame.amax.mybase.Models.DatabaseHelper;
-import braingame.amax.mybase.Models.OpenFileDialog;
 import braingame.amax.mybase.R;
 
 import static braingame.amax.mybase.Models.DB.QUERY_SELECT_MIN_EN;
@@ -33,10 +34,12 @@ public class ActivityWordsEnRu extends AppCompatActivity {
     EditText mInputRuAnswer;
     Button mBtnCheckAnswer, mBtnMissWord;
 
-
+//исправить скобки (ал) в бд
     private static String answer;
-    private static int countWord;
-    private static ArrayList<String> row = new ArrayList<>();
+    private static int sumWord;
+    private static int iterator = 0;
+    private static int totalScore = 0;
+    private static HashMap<Integer, ArrayList<String>> hashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,9 +48,9 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         //-
         Bundle arguments = getIntent().getExtras();
         assert arguments != null;
-        final int mTotalWords = (int) arguments.get("select_session");
-        countWord = mTotalWords;
-        System.out.println(mTotalWords);
+        int mTotalWords = (int) arguments.get("select_session");
+        sumWord = mTotalWords*2;
+        System.out.println("Выбрана ссесия - " + mTotalWords);
         //-
         DatabaseHelper mDBHelper = new DatabaseHelper(this);
         mDb = mDBHelper.getWritableDatabase();
@@ -58,68 +61,42 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         mInputRuAnswer = findViewById(R.id.input_ru_answer);
         mBtnMissWord = findViewById(R.id.btn_miss_word);
 
-        getRowWithNewWord();
-        System.out.println(row.toString());
-        showWord();
-
-
-
-        try {
-            mAddAvatar.setOnClickListener(new View.OnClickListener() {
-                @Override
-                    public void onClick(View v) {
-                OpenFileDialog fileDialog = new OpenFileDialog(ActivityWordsEnRu.this);
-                            fileDialog.show();
-                    }
-                    });
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+        createWordsArray(mTotalWords);
+        check();
+//
+//        try {
+//            mAddAvatar.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                    public void onClick(View v) {
+//                OpenFileDialog fileDialog = new OpenFileDialog(ActivityWordsEnRu.this);
+//                            fileDialog.show();
+//                    }
+//                    });
+//        }
+//        catch (Exception e) {
+//            e.printStackTrace();
+//        }
 
         try {
             mBtnCheckAnswer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    System.out.println(answer);
                     if (mInputRuAnswer.length()<1) toast("Введите ответ");
-
                     else if (answer.contains(mInputRuAnswer.getText())) {
-
                         toast("Правильно");
+                        totalScore++;
                         mInputRuAnswer.setText("");
-                        try {
-                            countWord--;
-                            Thread.sleep(500);
-                            if (countWord==0) {
-                                createOneButtonAlertDialog("Поздравляем!", "Вы успешно завершили запланированную сессию. Нажмите \"ОК\" для продолжения и спланируйте новую ссесию");
-                            }
-                            else {
-                                getRowWithNewWord();
-                                showWord();
-                            }
-
-                        }
-                        catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                    else {
+                        updateStatUp(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+                        iterator++;
+                        System.out.println(iterator);
+                        check();
+                    }else {
                         toast("Неверно, вот некоторые варианты перевода: " + "\n" + answer);
-                        try {
-                            Thread.sleep(500);
-                            updateStatDown(row.get(1));
-                            getRowWithNewWord();
-                            showWord();
-                        }
-                        catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-
-
+                        mInputRuAnswer.setText("");
+                        updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+                        iterator++;
+                        check();
                     }
-
                 }
             });
         }
@@ -130,44 +107,50 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         mBtnMissWord.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                updateStatDown(row.get(1));
-                getRowWithNewWord();
-                showWord();
-                System.out.println(row.toString());
-
+                updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+                System.out.println(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+                iterator++;
+                check();
             }
         });
+    }//----------OnCreated
 
-
+    private void showWord(int index) {
+        String str = Objects.requireNonNull(hashMap.get(index)).get(1) + " " + Objects.requireNonNull(hashMap.get(index)).get(2) + " [" + Objects.requireNonNull(hashMap.get(index)).get(4) + "]";
+        answer = Objects.requireNonNull(hashMap.get(index)).get(3);
+        mTextViewEn.setText(str);
+        System.out.println(answer);
     }
 
-    // создает диалоговое окно с 1й кнопкой
-    private void createOneButtonAlertDialog(String title, String content) {
-        // объект Builder для создания диалогового окна
+    private void createWordsArray(int sizeArray){
+        for (int i = 0, j = sizeArray; i<sizeArray; i++,j++){
+            hashMap.put(i,createArrayWithNewWord());
+            hashMap.put(j,createArrayWithOldWord());
+        }
+        System.out.println(hashMap);
+    }
+
+private void check(){
+        if (iterator!=sumWord) showWord(iterator);
+        else {
+            createOneButtonAlertDialog("Вы успешно завершили запланированную сессию. \nВы правильно перевели " + totalScore + " слов из " + sumWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
+        }
+    System.out.println("Iterator = " + iterator + " / sumWord = " + sumWord);
+}
+
+    private void createOneButtonAlertDialog(String content) {
         AlertDialog.Builder builder = new AlertDialog.Builder(ActivityWordsEnRu.this);
-        // добавляем различные компоненты в диалоговое окно
-        builder.setTitle(title);
+        builder.setTitle("Поздравляем!");
         builder.setMessage(content);
-        // устанавливаем кнопку, которая отвечает за позитивный ответ
         builder.setPositiveButton("OK",
-                // устанавливаем слушатель
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
-                        // по нажатию создаем всплывающее окно с типом нажатой конпки
                         Intent intent = new Intent(getApplicationContext(), ActivityWords.class);
                         startActivity(intent);
                     }
                 });
-        // объект Builder создал диалоговое окно и оно готово появиться на экране
-        // вызываем этот метод, чтобы показать AlertDialog на экране пользователя
         builder.show();
-    }
-
-
-    private void showWord() {
-        String str = row.get(1) + " " + row.get(2) + " [" + row.get(4) + "]";
-        mTextViewEn.setText(str);
     }
 
     private void toast(String s) {
@@ -177,49 +160,61 @@ public class ActivityWordsEnRu extends AppCompatActivity {
     }
 
 
-
-    private ArrayList<String> getRowWithNewWord() {
+    private ArrayList<String> createArrayWithNewWord() {
+        ArrayList<String> tempArr = new ArrayList<>();
         Cursor cursor = mDb.rawQuery(QUERY_SELECT_NEW_WORD, null);
         cursor.moveToFirst();
         for (int i = 0; i<cursor.getColumnCount(); i++) {
-            row.add(cursor.getString(i));
+            tempArr.add(cursor.getString(i));
         }
-        answer = row.get(3);
         cursor.close();
-        return row;
+        return tempArr;
     }
 
-    private ArrayList<String> getRowWithOldWord() {
+    private ArrayList<String> createArrayWithOldWord() {
+        ArrayList<String> tempArr = new ArrayList<>();
         Cursor cursor = mDb.rawQuery(QUERY_SELECT_MIN_EN, null);
         cursor.moveToFirst();
         for (int i = 0; i<cursor.getColumnCount(); i++) {
-            row.add(cursor.getString(i));
+            tempArr.add(cursor.getString(i));
         }
         cursor.close();
-        return row;
+        return tempArr;
     }
-
-
-
 
     private void updateStatDown(String en) {
-        int tempValue = Integer.parseInt(row.get(5));
+        int tempValue1 = Integer.parseInt((String) Objects.requireNonNull(hashMap.get(0)).get(5))-10;
+        int tempValue2 = Integer.parseInt((String) Objects.requireNonNull(hashMap.get(0)).get(8))+1;
+        System.out.println(tempValue1);
+        System.out.println(tempValue2);
         ContentValues cv = new ContentValues();
-        cv.put("stat", tempValue-10);
-        cv.put("countdown", row.get(8)+1);
+        cv.put("stat", tempValue1);
+        cv.put("countdown", tempValue2);
         cv.put("priority", "learn");
-        mDb.update("words", cv, "en = ?", new String[] { en });
+        try {
+            mDb.update("words", cv, "en = ?", new String[] { en });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateStatUp(String en) {
+        int tempValue1 = Integer.parseInt((String) Objects.requireNonNull(hashMap.get(0)).get(5))+10;
+        int tempValue2 = Integer.parseInt((String) Objects.requireNonNull(hashMap.get(0)).get(7))+1;
+        System.out.println(tempValue1);
+        System.out.println(tempValue2);
+        ContentValues cv = new ContentValues();
+        cv.put("stat", tempValue1);
+        cv.put("countdown", tempValue2);
+        cv.put("priority", "learn");
+        try {
+            mDb.update("words", cv, "en = ?", new String[] { en });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
-//
-//
-//    private void updateCountUp(String en) {
-//        ContentValues cv = new ContentValues();
-//        int tempValue = Integer.parseInt(getNotNewWord(7));
-//        cv.put("countup", tempValue+1);
-//        mDb.update("words", cv, "en = ?", new String[] { en });
-//        System.out.println(getNotNewWord(7));
-//    }
-
 
 }

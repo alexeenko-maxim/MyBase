@@ -48,12 +48,23 @@ public class ActivityWords extends AppCompatActivity {
         mBtnSelectEasySession.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                goToActivityWordsEnru();
+                goToActivityWordsEnruEasy();
             }
-
-
         });
 
+        mBtnSelectNormalSession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToActivityWordsEnruNormal();
+            }
+        });
+
+        mBtnSelectHardSession.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToActivityWordsEnruHard();
+            }
+        });
 
 
 
@@ -67,9 +78,19 @@ public class ActivityWords extends AppCompatActivity {
         });
 
     }
-    private void goToActivityWordsEnru() {
+    private void goToActivityWordsEnruEasy() {
         Intent intent = new Intent(this, ActivityWordsEnRu.class);
         intent.putExtra("select_session", 5);
+        startActivity(intent);
+    }
+    private void goToActivityWordsEnruNormal() {
+        Intent intent = new Intent(this, ActivityWordsEnRu.class);
+        intent.putExtra("select_session", 10);
+        startActivity(intent);
+    }
+    private void goToActivityWordsEnruHard() {
+        Intent intent = new Intent(this, ActivityWordsEnRu.class);
+        intent.putExtra("select_session", 25);
         startActivity(intent);
     }
 }
