@@ -34,12 +34,12 @@ public class ActivityWordsEnRu extends AppCompatActivity {
     EditText mInputRuAnswer;
     Button mBtnCheckAnswer, mBtnMissWord;
 
-//исправить скобки (ал) в бд
+
     private static String answer;
     private static int sumWord;
     private static int iterator = 0;
     private static int totalScore = 0;
-    private static HashMap<Integer, ArrayList<String>> hashMap = new HashMap<>();
+    private static final HashMap<Integer, ArrayList<String>> hashMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +168,7 @@ private void check(){
             tempArr.add(cursor.getString(i));
         }
         cursor.close();
+        System.out.println(tempArr);
         return tempArr;
     }
 
@@ -179,6 +180,8 @@ private void check(){
             tempArr.add(cursor.getString(i));
         }
         cursor.close();
+        System.out.println(tempArr);
+
         return tempArr;
     }
 
