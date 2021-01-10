@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -17,18 +19,20 @@ import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
 
-import braingame.amax.mybase.Models.DB;
 import braingame.amax.mybase.R;
 
 
 public class ActivityRegistration extends Activity {
 
+    private String userName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
-        final DB userName = new DB();
-        //---Обьявление переменных с привязкой 
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //---Обьявление переменных с привязкой
         final EditText mInputPhoneField = findViewById(R.id.phone_number_text);
         final Button mButtonSendPhone = findViewById(R.id.button_send_phone);
         final ProgressBar mProgressBar = findViewById(R.id.progress_Bar);
@@ -82,7 +86,7 @@ public class ActivityRegistration extends Activity {
                                     Intent intent = new Intent(getApplicationContext(), ActivityVerify.class);
                                     intent.putExtra("mobile", mInputPhoneField.getText().toString());
                                     intent.putExtra("verificationId", verificationId);
-//                                    userName.setUserName(mUserNameField.getText().toString());
+                                    intent.putExtra("user", mUserNameField.getText());
                                     startActivity(intent);
                                 }
                             }

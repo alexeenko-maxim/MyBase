@@ -7,6 +7,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -24,16 +25,24 @@ public class ActivityWords extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_words);
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        final Dialog selectSessionEnRu = new Dialog(this);
+        selectSessionEnRu.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        selectSessionEnRu.setContentView(R.layout.activity_words_enru_select_session);
+        Objects.requireNonNull(selectSessionEnRu.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Button mBtnSelectEasySessionEnRu = selectSessionEnRu.findViewById(R.id.btn_easy_session);
+        Button mBtnSelectNormalSessionEnRu = selectSessionEnRu.findViewById(R.id.btn_normal_session);
+        Button mBtnSelectHardSessionEnRu = selectSessionEnRu.findViewById(R.id.btn_hard_session);
 
-        final Dialog selectSession = new Dialog(this);
-        selectSession.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        selectSession.setContentView(R.layout.activity_words_enru_select_session);
-        Objects.requireNonNull(selectSession.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        final Dialog selectSessionRuEn = new Dialog(this);
+        selectSessionRuEn.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        selectSessionRuEn.setContentView(R.layout.activity_words_enru_select_session);
+        Objects.requireNonNull(selectSessionEnRu.getWindow()).setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        Button mBtnSelectEasySessionRuEn = selectSessionRuEn.findViewById(R.id.btn_easy_session);
+        Button mBtnSelectNormalSessionRuEn = selectSessionRuEn.findViewById(R.id.btn_normal_session);
+        Button mBtnSelectHardSessionRuEn = selectSessionRuEn.findViewById(R.id.btn_hard_session);
 
-
-        Button mBtnSelectEasySession = selectSession.findViewById(R.id.btn_easy_session);
-        Button mBtnSelectNormalSession = selectSession.findViewById(R.id.btn_normal_session);
-        Button mBtnSelectHardSession = selectSession.findViewById(R.id.btn_hard_session);
         Button mBtnGoLearnEnRu = findViewById(R.id.btn_go_learnEnRu);
         Button mBtnGoLearnRuEn = findViewById(R.id.btn_go_learnRuEn);
         Button mBtnGoAddWord = findViewById(R.id.btn_go_add_word);
@@ -41,32 +50,59 @@ public class ActivityWords extends AppCompatActivity {
         mBtnGoLearnEnRu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectSession.show();
+                selectSessionEnRu.show();
             }
         });
 
-        mBtnSelectEasySession.setOnClickListener(new View.OnClickListener() {
+        mBtnGoLearnRuEn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                selectSessionRuEn.show();
+            }
+        });
+
+
+        mBtnSelectEasySessionEnRu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goToActivityWordsEnruEasy();
             }
         });
 
-        mBtnSelectNormalSession.setOnClickListener(new View.OnClickListener() {
+        mBtnSelectNormalSessionEnRu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goToActivityWordsEnruNormal();
             }
         });
 
-        mBtnSelectHardSession.setOnClickListener(new View.OnClickListener() {
+        mBtnSelectHardSessionEnRu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 goToActivityWordsEnruHard();
             }
         });
 
+        mBtnSelectEasySessionRuEn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToActivityWordsRuenEasy();
+            }
+        });
 
+        mBtnSelectNormalSessionRuEn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToActivityWordsRuenNormal();
+            }
+        });
+
+        mBtnSelectHardSessionRuEn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToActivityWordsRuenHard();
+            }
+        });
 
         mAddAvatar = findViewById(R.id.btn_add_avatar);
         mAddAvatar.setOnClickListener(new View.OnClickListener() {
@@ -91,6 +127,27 @@ public class ActivityWords extends AppCompatActivity {
     private void goToActivityWordsEnruHard() {
         Intent intent = new Intent(this, ActivityWordsEnRu.class);
         intent.putExtra("select_session", 25);
+        startActivity(intent);
+    }
+
+    private void goToActivityWordsRuenEasy() {
+        Intent intent = new Intent(this, ActivityWordsRuEn.class);
+        intent.putExtra("select_session", 5);
+        startActivity(intent);
+    }
+    private void goToActivityWordsRuenNormal() {
+        Intent intent = new Intent(this, ActivityWordsRuEn.class);
+        intent.putExtra("select_session", 10);
+        startActivity(intent);
+    }
+    private void goToActivityWordsRuenHard() {
+        Intent intent = new Intent(this, ActivityWordsRuEn.class);
+        intent.putExtra("select_session", 25);
+        startActivity(intent);
+    }
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ActivityMenu.class);
         startActivity(intent);
     }
 }

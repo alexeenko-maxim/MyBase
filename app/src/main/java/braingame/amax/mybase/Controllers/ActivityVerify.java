@@ -1,10 +1,13 @@
 package braingame.amax.mybase.Controllers;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -24,20 +27,28 @@ import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
 
+import braingame.amax.mybase.Models.DB;
 import braingame.amax.mybase.R;
 
 import static braingame.amax.mybase.Models.HelpFunction.checkIsEmpty;
 
 public class ActivityVerify extends AppCompatActivity {
-
+    SharedPreferences mSettings;
     private String verificationId;
     private EditText mInputCode1, mInputCode2, mInputCode3, mInputCode4, mInputCode5, mInputCode6;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_verify);
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        final Intent intent = getIntent();
+        final String userName = intent.getStringExtra("user");
 
+        mSettings = getSharedPreferences(DB.USERNAME, MODE_PRIVATE);
+        final SharedPreferences.Editor prefEditor = mSettings.edit();
 
 
         TextView mTextMobile = findViewById(R.id.text_mobile);
@@ -89,6 +100,8 @@ public class ActivityVerify extends AppCompatActivity {
                                     mProgressBar.setVisibility(View.GONE);
                                     mVerifyBtn.setVisibility(View.VISIBLE);
                                     if (task.isSuccessful()) {
+                                        prefEditor.putString(DB.USERNAME, userName);
+                                        prefEditor.apply();
                                         Intent intent = new Intent(getApplicationContext(), ActivityVerifyCongrad.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         startActivity(intent);

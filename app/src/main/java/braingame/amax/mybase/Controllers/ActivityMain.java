@@ -3,6 +3,8 @@ package braingame.amax.mybase.Controllers;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,7 +24,8 @@ public class ActivityMain extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
         mCurrentUser = mAuth.getCurrentUser();
 

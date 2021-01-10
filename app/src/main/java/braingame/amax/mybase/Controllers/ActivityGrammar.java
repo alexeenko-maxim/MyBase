@@ -2,6 +2,8 @@ package braingame.amax.mybase.Controllers;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,7 +19,8 @@ public class ActivityGrammar extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_grammar);
-
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mAddAvatar = findViewById(R.id.btn_add_avatar);
         mAddAvatar.setOnClickListener(new View.OnClickListener() {

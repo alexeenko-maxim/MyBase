@@ -19,7 +19,7 @@
             android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/back_to_menu"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -31,7 +31,7 @@
                 android:typeface="normal" />
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/user_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -43,7 +43,7 @@
                 android:typeface="normal" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/exit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
