@@ -3,14 +3,12 @@ package braingame.amax.mybase.Controllers;
 import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -24,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
-import java.util.logging.Logger;
 
 import braingame.amax.mybase.Models.DB;
 import braingame.amax.mybase.Models.DatabaseHelper;
@@ -39,9 +36,6 @@ import static braingame.amax.mybase.Models.DB.USERNAME;
 
 public class ActivityWordsRuEn extends AppCompatActivity {
 
-    private static final Logger loger = Logger.getLogger(ActivityWordsRuEn.class.getName());
-
-
     SharedPreferences mUserName;
     private SQLiteDatabase mDb;
     Button mAddAvatar;
@@ -49,9 +43,8 @@ public class ActivityWordsRuEn extends AppCompatActivity {
     EditText mInputEnAnswer;
     Button mBtnCheckAnswer, mBtnMissWord;
 
-
     private static String[] answer;
-    private static String[] question;
+    private static String question;
     private static int sumWord;
     private static int iterator = 0;
     private static int totalScore = 0;
@@ -62,20 +55,11 @@ public class ActivityWordsRuEn extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_words_ruen);
+        hideStatusBar();
 
         mUserName = getSharedPreferences(DB.USERNAME, MODE_PRIVATE);
-        Bundle arguments = getIntent().getExtras();
-        //-Скрытие строки состояния-//
-        Window w = getWindow();
-        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //*
-        assert arguments != null;
-        int mTotalWords = (int) arguments.get("select_session");
-        sumWord = mTotalWords * 2;
-        System.out.println("Выбрана ссесия - " + mTotalWords);
-        //-
-        DatabaseHelper mDBHelper = new DatabaseHelper(this);
-        mDb = mDBHelper.getWritableDatabase();
+        int mTotalWords = setSessionLength();
+        initDataBaseHelper();
 
         //        mAddAvatar = findViewById(R.id.btn_add_avatar);
         //        mAddAvatar.setOnClickListener(new View.OnClickListener() {
@@ -95,37 +79,27 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         mExit = findViewById(R.id.exit);
         mUser.setText(mUserName.getString(USERNAME, String.valueOf(Context.MODE_PRIVATE)));
 
-        loger.info("Состояние переменной sumWord = " + sumWord);
-        loger.info("Состояние переменной mTotalWords = " + mTotalWords);
-        loger.info("Состояние переменной totalScore = " + totalScore);
-        loger.info("Состояние переменной answer = " + Arrays.toString(answer));
-
         createWordsArray(mTotalWords);
-        check();
-
+        nextQuestion();
 
         try {
-            mBtnCheckAnswer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mInputEnAnswer.length() < 1)
-                        toast("Введите ответ", Toast.LENGTH_LONG);
-                    else if (checkAnswer(answer)) {
-                        toast("Правильно", Toast.LENGTH_SHORT);
-                        totalScore++;
-                        loger.info("Количество правильных ответов = " + totalScore);
-                        mInputEnAnswer.setText("");
-                        updateStatUp(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                        iterator++;
-                        System.out.println(iterator);
-                        check();
-                    } else {
-                        toast("Неверно, вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
-                        mInputEnAnswer.setText("");
-                        updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                        iterator++;
-                        check();
-                    }
+            mBtnCheckAnswer.setOnClickListener(v -> {
+                if (mInputEnAnswer.length() < 1) toast("Введите ответ", Toast.LENGTH_LONG);
+                else if (checkAnswer(answer)) {
+                    toast("Правильно", Toast.LENGTH_SHORT);
+                    totalScore++;
+                    System.out.println("Количество правильных ответов = " + totalScore);
+                    mInputEnAnswer.setText("");
+                    updateStatUp(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+                    iterator++;
+                    System.out.println(iterator);
+                    nextQuestion();
+                } else {
+                    toast("Неверно, вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
+                    mInputEnAnswer.setText("");
+                    updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+                    iterator++;
+                    nextQuestion();
                 }
             });
         }
@@ -133,20 +107,40 @@ public class ActivityWordsRuEn extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mBtnMissWord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                System.out.println(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                toast("Вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
-                iterator++;
-                check();
-            }
+        mBtnMissWord.setOnClickListener(v -> {
+            updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+            System.out.println(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+            toast("Вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
+            iterator++;
+            nextQuestion();
         });
 
     }
 
+    private int setSessionLength() {
+        System.out.println("--- Вызван метод setSessionLength()");
+        Bundle arguments = getIntent().getExtras();
+        assert arguments != null;
+        int mTotalWords = (int) arguments.get("select_session");
+        sumWord = mTotalWords * 2;
+        System.out.println("--- Метод setSessionLength() вернул значение = " + mTotalWords);
+        return mTotalWords;
+    }
+
+    private void hideStatusBar() {
+        System.out.println("--- Вызван метод hideStatusBar()");
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    private void initDataBaseHelper() {
+        System.out.println("--- Вызван метод initDataBaseHelper()");
+        DatabaseHelper mDBHelper = new DatabaseHelper(this);
+        mDb = mDBHelper.getWritableDatabase();
+    }
+
     private ArrayList<String> createArrayWithNewWord() {
+        System.out.println("--- Вызван метод createArrayWithNewWord()");
         ArrayList<String> tempArr = new ArrayList<>();
         Cursor cursor = mDb.rawQuery(QUERY_SELECT_NEW_WORD, null);
         cursor.moveToFirst();
@@ -154,11 +148,12 @@ public class ActivityWordsRuEn extends AppCompatActivity {
             tempArr.add(cursor.getString(i));
         }
         cursor.close();
-        System.out.println(tempArr);
+        System.out.println("--- Метод createArrayWithNewWord() вернул значение = " + tempArr);
         return tempArr;
     }
 
     private ArrayList<String> createArrayWithOldWord() {
+        System.out.println("--- Вызван метод createArrayWithOldWord()");
         ArrayList<String> tempArr = new ArrayList<>();
         Cursor cursor = mDb.rawQuery(QUERY_SELECT_MIN_EN, null);
         cursor.moveToFirst();
@@ -166,149 +161,148 @@ public class ActivityWordsRuEn extends AppCompatActivity {
             tempArr.add(cursor.getString(i));
         }
         cursor.close();
-        System.out.println(tempArr);
-
+        System.out.println("--- Метод createArrayWithOldWord() вернул значение = " + tempArr);
         return tempArr;
     }
 
     private boolean checkAnswer(String[] arr) {
-        loger.info("Метод checkAnswer получил на вход массив = " + Arrays.toString(arr));
-
-        System.out.println("Згачение на входе " + Arrays.toString(arr));
+        System.out.println("--- Вызван метод checkAnswer() значение на входе  = " + Arrays.toString(arr));
         boolean temp = false;
         for (int i = 0; i < arr.length; i++) {
             if (arr[i].contentEquals(mInputEnAnswer.getText())) {
-                System.out.println("Сравниваю " + arr[i] + " c " + mInputEnAnswer.getText());
+                System.out.println("--- Метод checkAnswer() сравнивает " + arr[i] + " c " + mInputEnAnswer.getText());
                 temp = true;
                 break;
             } else temp = false;
         }
+        System.out.println("--- Метод checkAnswer() вернул значение = " + temp);
         return temp;
     }
 
-        private ArrayList<String> createMoreAnswers (String[] question){
-            loger.info("Метод createMoreAnswers получил на вход значение " + Arrays.toString(question));
-            ArrayList<String> tempArr = new ArrayList<>();
+    private ArrayList<String> createMoreAnswers(String question) {
+        System.out.println("--- Метод createMoreAnswers получил на вход значение = " + question);
+        ArrayList<String> tempArr = new ArrayList<>();
+        Cursor cursor = mDb.query(false,
+                DB.DATABASE_NAMES_TABLE,
+                new String[]{COLLUMN_NAMES_EN, COLLUMN_NAMES_TRANS},
+                COLLUMN_NAMES_RU + " LIKE ?",
+                new String[]{question + "%"},
+                null,
+                null,
+                null,
+                "5");
+        cursor.moveToFirst();
 
-            Cursor cursor = mDb.query(false,
-                    DB.DATABASE_NAMES_TABLE,
-                    new String[] {COLLUMN_NAMES_EN, COLLUMN_NAMES_TRANS},
-                    COLLUMN_NAMES_RU + " LIKE ?",
-                    new String[] { question[0] + "%" },
-                    null,
-                    null,
-                    null,
-                    "5");
-            cursor.moveToFirst();
-
-            while (cursor.moveToNext()){
-                for (int i = 0; i < cursor.getColumnCount(); i++) {
-                    tempArr.add(cursor.getString(i));
-                    loger.info("Добавлен элемент" + tempArr.get(i) );
-                }
-                cursor.moveToNext();
+        while (cursor.moveToNext()) {
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                tempArr.add(cursor.getString(i));
             }
+            cursor.moveToNext();
+        }
+        cursor.close();
+        System.out.println("--- Метод createMoreAnswers отдает значение: " + tempArr.toString());
+        return tempArr;
+    }
 
+    private void createWordsArray(int sizeArray) {
+        System.out.println("--- Метод createWordsArray получил на вход значение = " + sizeArray);
 
+        for (int i = 0, j = sizeArray; i < sizeArray; i++, j++) {
+            hashMap.put(i, createArrayWithNewWord());
+            hashMap.put(j, createArrayWithOldWord());
+        }
+        System.out.println("--- Метод createMoreAnswers отдает значение: " + hashMap.toString());
 
-//
-//            for (int i = 0; i < cursor.getColumnCount(); i++) {
-//                tempArr.add(cursor.getString(i));
-//                loger.info("Добавлен элемент" + tempArr.get(i) );
-//            }
+    }
 
-            cursor.close();
-            loger.info("Метод createMoreAnswers отдает значение: " + tempArr.toString());
-            return tempArr;
+    private void showWord(int index) {
+        System.out.println("--- Метод showWord получил на вход значение = " + index);
+        String str = Objects.requireNonNull(hashMap.get(index)).get(3);
+        String[] temp = Objects.requireNonNull(hashMap.get(index)).get(3).split(", ");
+        question = temp[0];
+        answer = (Objects.requireNonNull(hashMap.get(index)).get(1) + " " + Objects.requireNonNull(hashMap.get(index)).get(2)).split(", ");
+        System.out.println("--- Метод showWord задал значение переменной answer = " + Arrays.toString(answer));
+        mTextViewRu.setText(str);
+        System.out.println("--- Метод showWord установил значение поля mTextViewRu = " + str);
+    }
+
+    private void nextQuestion() {
+        System.out.println("--- Вызван метод nextQuestion()");
+        if (iterator != sumWord){
+            System.out.println("--- Метод nextQuestion() сравнил iterator и sumWord, они не равны");
+            System.out.println("--- Метод nextQuestion() вызвал метод  showWord(iterator)");
+            showWord(iterator);
         }
 
-        private void createWordsArray ( int sizeArray){
-            for (int i = 0, j = sizeArray; i < sizeArray; i++, j++) {
-                hashMap.put(i, createArrayWithNewWord());
-                hashMap.put(j, createArrayWithOldWord());
-            }
-            System.out.println(hashMap);
+        else {
+            iterator = 0;
+            System.out.println("--- Метод nextQuestion() сравнил iterator и sumWord, они равны");
+            createOneButtonAlertDialog("Вы успешно завершили запланированную сессию. \nВы правильно перевели " + totalScore + " слов из " + sumWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
+            System.out.println("--- Метод nextQuestion() вызвал метод createOneButtonAlertDialog");
         }
+    }
 
-        private void showWord ( int index){
-            String str = Objects.requireNonNull(hashMap.get(index)).get(3);
-            question = Objects.requireNonNull(hashMap.get(index)).get(3).split(", ");
-            answer = (Objects.requireNonNull(hashMap.get(index)).get(1) + " " + Objects.requireNonNull(hashMap.get(index)).get(2)).split(", ");
-            mTextViewRu.setText(str);
-            createMoreAnswers(question);
-
-            System.out.println(Arrays.toString(answer));
+    private void updateStatDown(String en) {
+        System.out.println("--- Метод updateStatDown получил на вход значение = " + en);
+        int tempValue1 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(5)) - 10;
+        int tempValue2 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(8)) + 1;
+        System.out.println(tempValue1);
+        System.out.println(tempValue2);
+        ContentValues cv = new ContentValues();
+        cv.put("stat", tempValue1);
+        cv.put("countdown", tempValue2);
+        cv.put("priority", "learn");
+        try {
+            mDb.update("words", cv, "en = ?", new String[]{en});
         }
-
-        private void check () {
-            if (iterator != sumWord) showWord(iterator);
-            else {
-                iterator = 0;
-                createOneButtonAlertDialog("Вы успешно завершили запланированную сессию. \nВы правильно перевели " + totalScore + " слов из " + sumWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
-            }
-            System.out.println("Iterator = " + iterator + " / sumWord = " + sumWord);
+        catch (Exception e) {
+            e.printStackTrace();
         }
+    }
 
-        private void updateStatDown (String en){
-            int tempValue1 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(5)) - 10;
-            int tempValue2 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(8)) + 1;
-            System.out.println(tempValue1);
-            System.out.println(tempValue2);
-            ContentValues cv = new ContentValues();
-            cv.put("stat", tempValue1);
-            cv.put("countdown", tempValue2);
-            cv.put("priority", "learn");
-            try {
-                mDb.update("words", cv, "en = ?", new String[]{en});
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
+    private void updateStatUp(String en) {
+        System.out.println("--- Метод updateStatDown получил на вход значение = " + en);
+        int tempValue1 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(5)) + 10;
+        int tempValue2 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(7)) + 1;
+        System.out.println(tempValue1);
+        System.out.println(tempValue2);
+        ContentValues cv = new ContentValues();
+        cv.put("stat", tempValue1);
+        cv.put("countup", tempValue2);
+        cv.put("priority", "learn");
+        try {
+            mDb.update("words", cv, "en = ?", new String[]{en});
         }
-
-        private void updateStatUp (String en){
-            int tempValue1 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(5)) + 10;
-            int tempValue2 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(7)) + 1;
-            System.out.println(tempValue1);
-            System.out.println(tempValue2);
-            ContentValues cv = new ContentValues();
-            cv.put("stat", tempValue1);
-            cv.put("countup", tempValue2);
-            cv.put("priority", "learn");
-            try {
-                mDb.update("words", cv, "en = ?", new String[]{en});
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-
-        }
-
-        private void createOneButtonAlertDialog (String content){
-            AlertDialog.Builder builder = new AlertDialog.Builder(ActivityWordsRuEn.this);
-            builder.setTitle("Поздравляем!");
-            builder.setMessage(content);
-            builder.setPositiveButton("OK",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int which) {
-                            Intent intent = new Intent(getApplicationContext(), ActivityWords.class);
-                            startActivity(intent);
-                        }
-                    });
-            builder.show();
-        }
-
-        private void toast (String s,int time){
-            Toast toastNull = Toast.makeText(ActivityWordsRuEn.this, s, time);
-            toastNull.setGravity(Gravity.CENTER, 0, 0);
-            toastNull.show();
-        }
-
-        @Override
-        public void onBackPressed () {
-            Intent intent = new Intent(this, ActivityWords.class);
-            startActivity(intent);
+        catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
+
+    private void createOneButtonAlertDialog(String content) {
+        System.out.println("--- Вызван метод createOneButtonAlertDialog");
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityWordsRuEn.this);
+        builder.setTitle("Поздравляем!");
+        builder.setMessage(content);
+        builder.setPositiveButton("OK",
+                (dialog, which) -> {
+                    Intent intent = new Intent(getApplicationContext(), ActivityWords.class);
+                    startActivity(intent);
+                });
+        builder.show();
+    }
+
+    private void toast(String s, int time) {
+        System.out.println("--- Вызван метод toast");
+        Toast toastNull = Toast.makeText(ActivityWordsRuEn.this, s, time);
+        toastNull.setGravity(Gravity.CENTER, 0, 0);
+        toastNull.show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        Intent intent = new Intent(this, ActivityWords.class);
+        startActivity(intent);
+    }
+
+}
