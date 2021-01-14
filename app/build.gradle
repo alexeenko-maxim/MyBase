@@ -54,7 +54,7 @@ dependencies {
     compile 'com.github.PhilJay:MPAndroidChart:v2.2.4'
 
     implementation fileTree(dir: 'F:\\Develop\\Java', include: ['*.aar', '*.jar'], exclude: [])
-
+    testImplementation 'junit:junit:4.12'
 
 
 }

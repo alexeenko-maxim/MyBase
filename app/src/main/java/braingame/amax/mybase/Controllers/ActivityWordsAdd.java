@@ -1,12 +1,11 @@
 package braingame.amax.mybase.Controllers;
 
 import android.annotation.SuppressLint;
-import android.content.ContentValues;
-import android.database.Cursor;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -15,18 +14,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import java.util.ArrayList;
-
 import braingame.amax.mybase.Models.DatabaseHelper;
+import braingame.amax.mybase.Models.DatabaseMethods;
 import braingame.amax.mybase.R;
-
-import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_EN;
-import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_PART_OF_SPEECH;
-import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_RU;
-import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_TRANS;
-import static braingame.amax.mybase.Models.DatabaseQuery.DATABASE_NAMES_TABLE;
-import static braingame.amax.mybase.Models.DatabaseQuery.QUERY_GET_TOTAL_WORDS;
-import static braingame.amax.mybase.Models.DatabaseQuery.QUERY_GET_TOTAL_YOUR_WORDS;
 
 
 public class ActivityWordsAdd extends AppCompatActivity {
@@ -44,8 +34,8 @@ public class ActivityWordsAdd extends AppCompatActivity {
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         initDataBaseHelper();
-        getTotalWordInDB();
-        temp = getTotalWordInDB();
+        DatabaseMethods.getTotalWordInDB(mDb);
+        temp = DatabaseMethods.getTotalWordInDB(mDb);
 
         mBtnAddWord = findViewById(R.id.btn_add_word);
         mBtnGoBack = findViewById(R.id.btn_go_back);
@@ -59,8 +49,8 @@ public class ActivityWordsAdd extends AppCompatActivity {
         mTextViewWordTrans = findViewById(R.id.editTextTrans);
         mTextViewWordRu = findViewById(R.id.editTextTextRu);
         mTextViewWordPartOfSpeech = findViewById(R.id.editTextPartOfSpeech);
-        mTextViewTotalWordInDB.setText("Количество слов в базе данных: " + getTotalWordInDB());
-        mTextViewTotalYourWords.setText("Количество Вами добавленных слов: " + getTotalYourWords());
+        mTextViewTotalWordInDB.setText("Количество слов в базе данных: " + DatabaseMethods.getTotalWordInDB(mDb));
+        mTextViewTotalYourWords.setText("Количество Вами добавленных слов: " + DatabaseMethods.getTotalYourWords(mDb));
 
         try {
             mBtnAddWord.setOnClickListener(v -> {
@@ -68,14 +58,14 @@ public class ActivityWordsAdd extends AppCompatActivity {
                     toast("Заполните все поля", Toast.LENGTH_LONG);
                     System.out.println("Значение полей: " + mTextViewWordEn.length() + " " + mTextViewWordTrans.length() + " " + mTextViewWordRu.length() + " " + mTextViewWordPartOfSpeech.length());
                 } else {
-                    addWordInDB(mTextViewWordEn.getText().toString(),
+                    DatabaseMethods.addWordInDB(mDb, mTextViewWordEn.getText().toString(),
                             mTextViewWordTrans.getText().toString(),
                             mTextViewWordRu.getText().toString(),
                             mTextViewWordPartOfSpeech.getText().toString());
                     clearFields();
                     toast("Слово добавленно", Toast.LENGTH_SHORT);
-                    mTextViewTotalWordInDB.setText("Количество слов в базе данных: " + getTotalWordInDB());
-                    mTextViewTotalYourWords.setText("Количество Вами добавленных слов: " + getTotalYourWords());
+                    mTextViewTotalWordInDB.setText("Количество слов в базе данных: " + DatabaseMethods.getTotalWordInDB(mDb));
+                    mTextViewTotalYourWords.setText("Количество Вами добавленных слов: " + DatabaseMethods.getTotalYourWords(mDb));
                 }
             });
         }
@@ -83,7 +73,30 @@ public class ActivityWordsAdd extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        try {
+            mBtnGoBack.setOnClickListener(v -> {
+                Intent intent = new Intent(this, ActivityWords.class);
+                startActivity(intent);
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
+        mTextViewMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ActivityWordsAdd.this, ActivityMenu.class);
+                startActivity(intent);
+            }
+        });
+
+        mTextViewExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finishAffinity();
+            }
+        });
     }//onCreate
 
     private boolean checkFillUp() {
@@ -95,44 +108,6 @@ public class ActivityWordsAdd extends AppCompatActivity {
         mTextViewWordTrans.setText("");
         mTextViewWordRu.setText("");
         mTextViewWordPartOfSpeech.setText("");
-    }
-
-    private String getTotalWordInDB() {
-        Cursor cursor = mDb.rawQuery(QUERY_GET_TOTAL_WORDS, null);
-        ArrayList<String> tempArr = new ArrayList<>();
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getColumnCount(); i++) {
-            tempArr.add(cursor.getString(i));
-        }
-        cursor.close();
-        Log.d(TAG, tempArr.get(0));
-        return tempArr.get(0);
-    }
-
-    private String getTotalYourWords() {
-        Cursor cursor = mDb.rawQuery(QUERY_GET_TOTAL_YOUR_WORDS, null);
-        ArrayList<String> tempArr = new ArrayList<>();
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getColumnCount(); i++) {
-            tempArr.add(cursor.getString(i));
-        }
-        cursor.close();
-        Log.d(TAG, tempArr.get(0));
-        return tempArr.get(0);
-    }
-
-    private void addWordInDB(String en, String trans, String ru, String part_of_speech) {
-        ContentValues cv = new ContentValues();
-        cv.put(COLLUMN_NAMES_EN, en);
-        cv.put(COLLUMN_NAMES_TRANS, trans);
-        cv.put(COLLUMN_NAMES_RU, ru);
-        cv.put(COLLUMN_NAMES_PART_OF_SPEECH, part_of_speech);
-        try {
-            mDb.insert(DATABASE_NAMES_TABLE, null, cv);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     private void initDataBaseHelper() {
