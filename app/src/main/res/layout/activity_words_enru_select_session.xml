@@ -5,6 +5,7 @@
     android:layout_height="match_parent">
 
     <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="#565A56"
@@ -15,10 +16,10 @@
 
         <LinearLayout
             android:id="@+id/pad"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:orientation="vertical"
-            android:padding="30dp">
+            android:padding="20dp">
 
             <TextView
                 android:id="@+id/textView9"
@@ -34,6 +35,7 @@
                 android:id="@+id/btn_easy_session"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
                 android:background="@drawable/button_pass"
                 android:text="Легко"
                 android:textColor="#FFFFFF" />

@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -26,13 +25,12 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.logging.Logger;
 
-import braingame.amax.mybase.Models.DB;
 import braingame.amax.mybase.Models.DatabaseHelper;
 import braingame.amax.mybase.R;
 
-import static braingame.amax.mybase.Models.DB.QUERY_SELECT_MIN_EN;
-import static braingame.amax.mybase.Models.DB.QUERY_SELECT_NEW_WORD;
-import static braingame.amax.mybase.Models.DB.USERNAME;
+import static braingame.amax.mybase.Models.DatabaseQuery.QUERY_SELECT_MIN_EN;
+import static braingame.amax.mybase.Models.DatabaseQuery.QUERY_SELECT_NEW_WORD;
+import static braingame.amax.mybase.Models.DatabaseQuery.USERNAME;
 
 public class ActivityWordsEnRu extends AppCompatActivity {
 
@@ -40,8 +38,7 @@ public class ActivityWordsEnRu extends AppCompatActivity {
 
     SharedPreferences mUserName;
     private SQLiteDatabase mDb;
-    Button mAddAvatar;
-    TextView mTextViewEn, mUser, mBackToMenu, mExit;
+    TextView mTextViewEn, mUser, mBackToMenu, mExit, mTextViewTrans, mTextViewPartOfSpeech;
     EditText mInputRuAnswer;
     Button mBtnCheckAnswer, mBtnMissWord;
 
@@ -57,7 +54,7 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_words_enru);
         //-
-        mUserName = getSharedPreferences(DB.USERNAME, MODE_PRIVATE);
+        mUserName = getSharedPreferences(USERNAME, MODE_PRIVATE);
         Bundle arguments = getIntent().getExtras();
         //-Скрытие строки состояния-//
         Window w = getWindow();
@@ -73,8 +70,9 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         DatabaseHelper mDBHelper = new DatabaseHelper(this);
         mDb = mDBHelper.getWritableDatabase();
 
-        mAddAvatar = findViewById(R.id.btn_add_avatar);
         mTextViewEn = findViewById(R.id.textViewEn);
+        mTextViewTrans = findViewById(R.id.textViewTrans);
+        mTextViewPartOfSpeech = findViewById(R.id.textViewPartOfSpeech);
         mBtnCheckAnswer = findViewById(R.id.btn_check_answer);
         mInputRuAnswer = findViewById(R.id.input_ru_answer);
         mBtnMissWord = findViewById(R.id.btn_miss_word);
@@ -105,27 +103,24 @@ public class ActivityWordsEnRu extends AppCompatActivity {
 //        }
 
         try {
-            mBtnCheckAnswer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mInputRuAnswer.length()<1) toast("Введите ответ", Toast.LENGTH_LONG);
-                    else if (checkAnswer(answer)) {
-                        toast("Правильно", Toast.LENGTH_SHORT);
-                        totalScore++;
-                        loger.info("Количество правильных ответов = " + totalScore);
-                        mInputRuAnswer.setText("");
-                        updateStatUp(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                        iterator++;
-                        loger.info("После правильного ответа iterator = " + iterator);
-                        check();
-                    }else {
-                        toast("Неверно, вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
-                        mInputRuAnswer.setText("");
-                        updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                        iterator++;
-                        loger.info("После неправильного ответа iterator = " + iterator);
-                        check();
-                    }
+            mBtnCheckAnswer.setOnClickListener(v -> {
+                if (mInputRuAnswer.length()<1) toast("Введите ответ", Toast.LENGTH_LONG);
+                else if (checkAnswer(answer)) {
+                    toast("Правильно", Toast.LENGTH_SHORT);
+                    totalScore++;
+                    loger.info("Количество правильных ответов = " + totalScore);
+                    mInputRuAnswer.setText("");
+                    updateStatUp(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+                    iterator++;
+                    loger.info("После правильного ответа iterator = " + iterator);
+                    check();
+                }else {
+                    toast("Неверно, вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
+                    mInputRuAnswer.setText("");
+                    updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+                    iterator++;
+                    loger.info("После неправильного ответа iterator = " + iterator);
+                    check();
                 }
             });
         }
@@ -133,25 +128,26 @@ public class ActivityWordsEnRu extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mBtnMissWord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                System.out.println(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                toast("Вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
-                iterator++;
-                loger.info("После пропуска ответа iterator = " + iterator);
-                check();
-            }
+        mBtnMissWord.setOnClickListener(v -> {
+            updateStatDown(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+            System.out.println(Objects.requireNonNull(hashMap.get(iterator)).get(1));
+            toast("Вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
+            iterator++;
+            loger.info("После пропуска ответа iterator = " + iterator);
+            check();
         });
     }//----------OnCreated
 
     private void showWord(int index) {
         loger.info("Метод showWord получил на вход значение = " + index);
-        String str = Objects.requireNonNull(hashMap.get(index)).get(1) + " " + Objects.requireNonNull(hashMap.get(index)).get(2) + "\n[" + Objects.requireNonNull(hashMap.get(index)).get(4) + "]";
+        String strEn = Objects.requireNonNull(hashMap.get(index)).get(1);
+        String strTrans = Objects.requireNonNull(hashMap.get(index)).get(2);
+        String strPartOfSpeech = Objects.requireNonNull(hashMap.get(index)).get(4);
         answer = Objects.requireNonNull(hashMap.get(index)).get(3).split(", ");
         loger.info("Метод showWord уснановил згачение переменной answer = " + Arrays.toString(answer));
-        mTextViewEn.setText(str);
+        mTextViewEn.setText(strEn);
+        mTextViewTrans.setText(strTrans);
+        mTextViewPartOfSpeech.setText(strPartOfSpeech);
         System.out.println(Arrays.toString(answer));
 
     }

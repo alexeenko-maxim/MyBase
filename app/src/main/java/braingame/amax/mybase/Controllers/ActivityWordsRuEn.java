@@ -23,28 +23,29 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
 
-import braingame.amax.mybase.Models.DB;
 import braingame.amax.mybase.Models.DatabaseHelper;
+import braingame.amax.mybase.Models.DatabaseMethods;
 import braingame.amax.mybase.R;
 
-import static braingame.amax.mybase.Models.DB.COLLUMN_NAMES_EN;
-import static braingame.amax.mybase.Models.DB.COLLUMN_NAMES_RU;
-import static braingame.amax.mybase.Models.DB.COLLUMN_NAMES_TRANS;
-import static braingame.amax.mybase.Models.DB.QUERY_SELECT_MIN_EN;
-import static braingame.amax.mybase.Models.DB.QUERY_SELECT_NEW_WORD;
-import static braingame.amax.mybase.Models.DB.USERNAME;
+import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_COUNTDOWN;
+import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_EN;
+import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_PRIORITY;
+import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_RU;
+import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_STAT;
+import static braingame.amax.mybase.Models.DatabaseQuery.COLLUMN_NAMES_TRANS;
+import static braingame.amax.mybase.Models.DatabaseQuery.DATABASE_NAMES_TABLE;
+import static braingame.amax.mybase.Models.DatabaseQuery.QUERY_SELECT_MIN_EN;
+import static braingame.amax.mybase.Models.DatabaseQuery.USERNAME;
 
 public class ActivityWordsRuEn extends AppCompatActivity {
 
     SharedPreferences mUserName;
     private SQLiteDatabase mDb;
-    Button mAddAvatar;
     TextView mTextViewRu, mUser, mBackToMenu, mExit;
     EditText mInputEnAnswer;
     Button mBtnCheckAnswer, mBtnMissWord;
 
     private static String[] answer;
-    private static String question;
     private static int sumWord;
     private static int iterator = 0;
     private static int totalScore = 0;
@@ -57,18 +58,10 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         setContentView(R.layout.activity_words_ruen);
         hideStatusBar();
 
-        mUserName = getSharedPreferences(DB.USERNAME, MODE_PRIVATE);
+        mUserName = getSharedPreferences(USERNAME, MODE_PRIVATE);
         int mTotalWords = setSessionLength();
         initDataBaseHelper();
 
-        //        mAddAvatar = findViewById(R.id.btn_add_avatar);
-        //        mAddAvatar.setOnClickListener(new View.OnClickListener() {
-        //            @Override
-        //            public void onClick(View v) {
-        //                OpenFileDialog fileDialog = new OpenFileDialog(ActivityWordsRuEn.this);
-        //                fileDialog.show();
-        //            }
-        //        });
 
         mTextViewRu = findViewById(R.id.textViewRu);
         mBtnCheckAnswer = findViewById(R.id.btn_check_answer);
@@ -139,18 +132,7 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         mDb = mDBHelper.getWritableDatabase();
     }
 
-    private ArrayList<String> createArrayWithNewWord() {
-        System.out.println("--- Вызван метод createArrayWithNewWord()");
-        ArrayList<String> tempArr = new ArrayList<>();
-        Cursor cursor = mDb.rawQuery(QUERY_SELECT_NEW_WORD, null);
-        cursor.moveToFirst();
-        for (int i = 0; i < cursor.getColumnCount(); i++) {
-            tempArr.add(cursor.getString(i));
-        }
-        cursor.close();
-        System.out.println("--- Метод createArrayWithNewWord() вернул значение = " + tempArr);
-        return tempArr;
-    }
+
 
     private ArrayList<String> createArrayWithOldWord() {
         System.out.println("--- Вызван метод createArrayWithOldWord()");
@@ -179,11 +161,11 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         return temp;
     }
 
-    private ArrayList<String> createMoreAnswers(String question) {
+    private ArrayList<String> createAnalogAnswersArray(String question) {
         System.out.println("--- Метод createMoreAnswers получил на вход значение = " + question);
         ArrayList<String> tempArr = new ArrayList<>();
         Cursor cursor = mDb.query(false,
-                DB.DATABASE_NAMES_TABLE,
+                DATABASE_NAMES_TABLE,
                 new String[]{COLLUMN_NAMES_EN, COLLUMN_NAMES_TRANS},
                 COLLUMN_NAMES_RU + " LIKE ?",
                 new String[]{question + "%"},
@@ -208,10 +190,10 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         System.out.println("--- Метод createWordsArray получил на вход значение = " + sizeArray);
 
         for (int i = 0, j = sizeArray; i < sizeArray; i++, j++) {
-            hashMap.put(i, createArrayWithNewWord());
+            hashMap.put(i, DatabaseMethods.createArrayWithNewWord(mDb));
             hashMap.put(j, createArrayWithOldWord());
         }
-        System.out.println("--- Метод createMoreAnswers отдает значение: " + hashMap.toString());
+        System.out.println("--- Метод createWordsArray отдает значение: " + hashMap.toString());
 
     }
 
@@ -219,8 +201,8 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         System.out.println("--- Метод showWord получил на вход значение = " + index);
         String str = Objects.requireNonNull(hashMap.get(index)).get(3);
         String[] temp = Objects.requireNonNull(hashMap.get(index)).get(3).split(", ");
-        question = temp[0];
-        answer = (Objects.requireNonNull(hashMap.get(index)).get(1) + " " + Objects.requireNonNull(hashMap.get(index)).get(2)).split(", ");
+        String question = temp[0];
+        answer = (Objects.requireNonNull(hashMap.get(index)).get(1) + ", " + Objects.requireNonNull(hashMap.get(index)).get(2)).split(", ");
         System.out.println("--- Метод showWord задал значение переменной answer = " + Arrays.toString(answer));
         mTextViewRu.setText(str);
         System.out.println("--- Метод showWord установил значение поля mTextViewRu = " + str);
@@ -249,9 +231,9 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         System.out.println(tempValue1);
         System.out.println(tempValue2);
         ContentValues cv = new ContentValues();
-        cv.put("stat", tempValue1);
-        cv.put("countdown", tempValue2);
-        cv.put("priority", "learn");
+        cv.put(COLLUMN_NAMES_STAT, tempValue1);
+        cv.put(COLLUMN_NAMES_COUNTDOWN, tempValue2);
+        cv.put(COLLUMN_NAMES_PRIORITY, "learn");
         try {
             mDb.update("words", cv, "en = ?", new String[]{en});
         }

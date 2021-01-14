@@ -3,18 +3,12 @@ package braingame.amax.mybase.Models;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import junit.framework.TestCase;
-
 import java.util.ArrayList;
 
-import static braingame.amax.mybase.Models.DatabaseQuery.QUERY_SELECT_NEW_WORD;
+public class DatabaseMethods extends DatabaseQuery{
 
-class QuestionsTest extends TestCase {
-
-    private SQLiteDatabase mDb;
-
-    private ArrayList<String> createArrayWithNewWord() {
-
+    public static ArrayList<String> createArrayWithNewWord(SQLiteDatabase mDb) {
+        System.out.println("--- Вызван метод createArrayWithNewWord()");
         ArrayList<String> tempArr = new ArrayList<>();
         Cursor cursor = mDb.rawQuery(QUERY_SELECT_NEW_WORD, null);
         cursor.moveToFirst();
@@ -22,7 +16,7 @@ class QuestionsTest extends TestCase {
             tempArr.add(cursor.getString(i));
         }
         cursor.close();
-        System.out.println(tempArr);
+        System.out.println("--- Метод createArrayWithNewWord() вернул значение = " + tempArr);
         return tempArr;
     }
 }

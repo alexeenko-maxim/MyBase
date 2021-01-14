@@ -27,9 +27,9 @@ import com.google.firebase.auth.PhoneAuthProvider;
 
 import java.util.concurrent.TimeUnit;
 
-import braingame.amax.mybase.Models.DB;
 import braingame.amax.mybase.R;
 
+import static braingame.amax.mybase.Models.DatabaseQuery.USERNAME;
 import static braingame.amax.mybase.Models.HelpFunction.checkIsEmpty;
 
 public class ActivityVerify extends AppCompatActivity {
@@ -47,7 +47,7 @@ public class ActivityVerify extends AppCompatActivity {
         final Intent intent = getIntent();
         final String userName = intent.getStringExtra("user");
 
-        mSettings = getSharedPreferences(DB.USERNAME, MODE_PRIVATE);
+        mSettings = getSharedPreferences(USERNAME, MODE_PRIVATE);
         final SharedPreferences.Editor prefEditor = mSettings.edit();
 
 
@@ -100,7 +100,7 @@ public class ActivityVerify extends AppCompatActivity {
                                     mProgressBar.setVisibility(View.GONE);
                                     mVerifyBtn.setVisibility(View.VISIBLE);
                                     if (task.isSuccessful()) {
-                                        prefEditor.putString(DB.USERNAME, userName);
+                                        prefEditor.putString(USERNAME, userName);
                                         prefEditor.apply();
                                         Intent intent = new Intent(getApplicationContext(), ActivityVerifyCongrad.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

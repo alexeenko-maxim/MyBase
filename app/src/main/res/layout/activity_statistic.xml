@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/main_menu_bg"
     tools:context="@tools:sample/full_names">
 
     <LinearLayout
@@ -54,14 +53,6 @@
                 android:textSize="16sp"
                 android:typeface="normal" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/button5"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="50dp"
-            android:background="@drawable/ava2" />
 
         <LinearLayout
             android:layout_width="match_parent"
