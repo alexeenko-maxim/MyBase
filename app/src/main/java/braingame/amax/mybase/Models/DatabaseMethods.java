@@ -1,10 +1,14 @@
 package braingame.amax.mybase.Models;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -119,4 +123,15 @@ public class DatabaseMethods extends DatabaseQuery{
             e.printStackTrace();
         }
     }
+
+    public static String nowDateTime(int increase) {
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar calendar = new GregorianCalendar();
+        calendar.add(Calendar.MINUTE, increase);
+        System.out.println(sdf.format(calendar.getTime()));
+        return sdf.format(calendar.getTime());
+    }
+
+
+
 }
