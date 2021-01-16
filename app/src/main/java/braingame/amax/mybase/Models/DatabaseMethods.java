@@ -125,13 +125,34 @@ public class DatabaseMethods extends DatabaseQuery{
     }
 
     public static String nowDateTime(int increase) {
-        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = new GregorianCalendar();
         calendar.add(Calendar.MINUTE, increase);
         System.out.println(sdf.format(calendar.getTime()));
         return sdf.format(calendar.getTime());
     }
 
-
+    public static ArrayList<String> getWord(SQLiteDatabase mDb) {
+        String dt = nowDateTime(0);
+        System.out.println("--- Вызван метод getWord");
+        System.out.println("--- dt = " + dt);
+        ArrayList<String> tempArr = new ArrayList<>();
+        Cursor cursor = mDb.query(
+                true,
+                DATABASE_NAMES_TABLE,
+                null,
+                COLLUMN_NAMES_DT + " LIKE ?", new String[] {"%" + dt + "%" },
+                null,
+                null,
+                null,
+                "1");
+        cursor.moveToFirst();
+        for (int i = 0; i < cursor.getColumnCount(); i++) {
+            tempArr.add(cursor.getString(i));
+        }
+        cursor.close();
+        System.out.println("--- Метод getWord() вернул значение = " + tempArr);
+        return tempArr;
+    }
 
 }

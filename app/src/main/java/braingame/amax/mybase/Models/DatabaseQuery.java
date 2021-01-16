@@ -17,6 +17,7 @@ public class DatabaseQuery {
     public static final String COLLUMN_NAMES_RU = "ru";
     public static final String COLLUMN_NAMES_PART_OF_SPEECH = "part_of_speech";
     public static final String COLLUMN_NAMES_STAT = "stat";
+    public static final String COLLUMN_NAMES_DT = "dt";
     public static final String COLLUMN_NAMES_COUNTUP = "countup";
     public static final String COLLUMN_NAMES_COUNTDOWN = "countdown";
     public static final String COLLUMN_NAMES_PRIORITY = "priority";

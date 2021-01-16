@@ -2,6 +2,7 @@ package braingame.amax.mybase.Controllers;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -23,9 +24,14 @@ import com.github.mikephil.charting.utils.ColorTemplate;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import braingame.amax.mybase.Models.DatabaseHelper;
+import braingame.amax.mybase.Models.DatabaseMethods;
 import braingame.amax.mybase.R;
 
 public class ActivityWords extends AppCompatActivity {
+
+    private SQLiteDatabase mDb;
+
     PieChart pieChart ;
     ArrayList<Entry> entries ;
     ArrayList<String> PieEntryLabels ;
@@ -40,6 +46,7 @@ public class ActivityWords extends AppCompatActivity {
         setContentView(R.layout.activity_words);
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        initDataBaseHelper();
 
 
 
@@ -146,7 +153,12 @@ public class ActivityWords extends AppCompatActivity {
 
         pieData.setValueTextSize(10);
         pieChart.getLegend();
-
+        try {
+            DatabaseMethods.getWord(mDb);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -198,6 +210,11 @@ public class ActivityWords extends AppCompatActivity {
         Intent intent = new Intent(this, ActivityWordsRuEn.class);
         intent.putExtra("select_session", 25);
         startActivity(intent);
+    }
+    private void initDataBaseHelper() {
+        System.out.println("--- Вызван метод initDataBaseHelper()");
+        DatabaseHelper mDBHelper = new DatabaseHelper(this);
+        mDb = mDBHelper.getWritableDatabase();
     }
     @Override
     public void onBackPressed() {
