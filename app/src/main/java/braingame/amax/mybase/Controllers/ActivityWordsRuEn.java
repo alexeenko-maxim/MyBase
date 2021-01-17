@@ -71,7 +71,7 @@ public class ActivityWordsRuEn extends AppCompatActivity {
                     totalScore++;
                     System.out.println("Количество правильных ответов = " + totalScore);
                     mInputEnAnswer.setText("");
-                    DatabaseMethods.updateStatUp(mDb, hashMap, Objects.requireNonNull(hashMap.get(iterator)).get(1));
+//                    updateAfterTrueAnswer(mDb, hashMap, Objects.requireNonNull(hashMap.get(iterator)).get(1));
                     iterator++;
                     System.out.println(iterator);
                     nextQuestion();

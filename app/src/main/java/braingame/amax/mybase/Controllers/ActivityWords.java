@@ -154,7 +154,7 @@ public class ActivityWords extends AppCompatActivity {
         pieData.setValueTextSize(10);
         pieChart.getLegend();
         try {
-            DatabaseMethods.getWord(mDb);
+            DatabaseMethods.getTodayWord(mDb);
         }
         catch (Exception e) {
             e.printStackTrace();

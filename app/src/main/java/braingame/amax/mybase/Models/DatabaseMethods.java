@@ -69,24 +69,54 @@ public class DatabaseMethods extends DatabaseQuery{
         }
     }
 
-    public static void updateStatUp(SQLiteDatabase mDb, HashMap<Integer, ArrayList<String>> hashMap, String en) {
-        System.out.println("--- Метод updateStatDown получил на вход значение = " + en);
-        int tempValue1 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(5)) + 10;
-        int tempValue2 = Integer.parseInt(Objects.requireNonNull(hashMap.get(0)).get(7)) + 1;
+    public static void updateAfterTrueAnswer(SQLiteDatabase mDb, ArrayList arrayList, String en) {
+        System.out.println("--- Метод updateAfterTrueAnswer получил на вход значение = " + en);
+        int tempValue1 = Integer.parseInt(String.valueOf(arrayList.get(5))) + 10;
+        int tempValue2 = Integer.parseInt(String.valueOf(arrayList.get(7))) + 1;
+        int increase = Integer.parseInt(String.valueOf(arrayList.get(7)));
         System.out.println(tempValue1);
         System.out.println(tempValue2);
         ContentValues cv = new ContentValues();
-        cv.put("stat", tempValue1);
-        cv.put("countup", tempValue2);
-        cv.put("priority", "learn");
+        cv.put(COLLUMN_NAMES_STAT, tempValue1);
+        cv.put(COLLUMN_NAMES_COUNTUP, tempValue2);
+        cv.put(COLLUMN_NAMES_PRIORITY, "learn");
+        cv.put(COLLUMN_NAMES_DT, nowDateTime(increase*24));
         try {
-            mDb.update("words", cv, "en = ?", new String[]{en});
+            mDb.update(TABLE_NAME,
+                    cv,
+                    "en = ?", new String[]{en});
         }
         catch (Exception e) {
             e.printStackTrace();
         }
-
     }
+
+    public static void updateAfterFalseAnswer(SQLiteDatabase mDb, ArrayList arrayList, String en) {
+        System.out.println("--- Метод updateStatDown получил на вход значение = " + en);
+        int countup = Integer.parseInt(String.valueOf(arrayList.get(7)));
+
+        if (countup!=0){
+
+        }
+        int tempValue1 = Integer.parseInt(String.valueOf(arrayList.get(5))) - 10;
+        int tempValue2 = Integer.parseInt(String.valueOf(arrayList.get(7))) - 1;
+        System.out.println(tempValue1);
+        System.out.println(tempValue2);
+        ContentValues cv = new ContentValues();
+        cv.put(COLLUMN_NAMES_STAT, tempValue1);
+        cv.put(COLLUMN_NAMES_COUNTUP, tempValue2);
+        cv.put(COLLUMN_NAMES_PRIORITY, "learn");
+        cv.put(COLLUMN_NAMES_DT, nowDateTime(0));
+        try {
+            mDb.update(TABLE_NAME,
+                    cv,
+                    "en = ?", new String[]{en});
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public static String getTotalWordInDB(SQLiteDatabase mDb) {
         Cursor cursor = mDb.rawQuery(QUERY_GET_TOTAL_WORDS, null);
@@ -117,7 +147,7 @@ public class DatabaseMethods extends DatabaseQuery{
         cv.put(COLLUMN_NAMES_RU, ru);
         cv.put(COLLUMN_NAMES_PART_OF_SPEECH, part_of_speech);
         try {
-            mDb.insert(DATABASE_NAMES_TABLE, null, cv);
+            mDb.insert(TABLE_NAME, null, cv);
         }
         catch (Exception e) {
             e.printStackTrace();
@@ -132,16 +162,16 @@ public class DatabaseMethods extends DatabaseQuery{
         return sdf.format(calendar.getTime());
     }
 
-    public static ArrayList<String> getWord(SQLiteDatabase mDb) {
+    public static ArrayList<String> getTodayWord(SQLiteDatabase mDb) {
         String dt = nowDateTime(0);
-        System.out.println("--- Вызван метод getWord");
+        System.out.println("--- Вызван метод getTodayWord");
         System.out.println("--- dt = " + dt);
         ArrayList<String> tempArr = new ArrayList<>();
         Cursor cursor = mDb.query(
                 true,
-                DATABASE_NAMES_TABLE,
+                TABLE_NAME,
                 null,
-                COLLUMN_NAMES_DT + " LIKE ?", new String[] {"%" + dt + "%" },
+                COLLUMN_NAMES_DT + " <= ? AND dt != ?", new String[] {dt,""},
                 null,
                 null,
                 null,
@@ -151,8 +181,50 @@ public class DatabaseMethods extends DatabaseQuery{
             tempArr.add(cursor.getString(i));
         }
         cursor.close();
-        System.out.println("--- Метод getWord() вернул значение = " + tempArr);
+        System.out.println("--- Метод getTodayWord вернул значение = " + tempArr);
         return tempArr;
     }
+
+    public static void getNewWord(SQLiteDatabase mDb, ArrayList arrayList, int newWordsIterator) {
+        if (newWordsIterator<=10) {
+            String dt = nowDateTime(0);
+            System.out.println("--- Вызван метод getNewWord");
+            System.out.println("--- dt = " + dt);
+
+            Cursor cursor = mDb.query(
+                    false,
+                    TABLE_NAME,
+                    null,
+                    COLLUMN_NAMES_PRIORITY + " = ?", new String[] {"new"},
+                    null,
+                    null,
+                    "random()",
+                    "1");
+            cursor.moveToFirst();
+            for (int i = 0; i < cursor.getColumnCount(); i++) {
+                arrayList.add(cursor.getString(i));
+            }
+            cursor.close();
+            System.out.println("--- Метод getNewWord вернул значение = " + arrayList);
+        }
+
+
+    }
+
+    public static int getCountTodayWord(SQLiteDatabase mDb) {
+        String dt = nowDateTime(0);
+        System.out.println("--- Вызван метод getWord");
+        System.out.println("--- dt = " + dt);
+        ArrayList<String> tempArr = new ArrayList<>();
+        Cursor cursor = mDb.rawQuery(QUERY_GET_TOTAL_TODAY_WORDS, new String[] { "%" + dt + "%"});
+        cursor.moveToFirst();
+        for (int i = 0; i < cursor.getColumnCount(); i++) {
+            tempArr.add(cursor.getString(i));
+        }
+        cursor.close();
+        System.out.println("--- Метод getWord() вернул значение = " + tempArr);
+        return Integer.parseInt(tempArr.get(0));
+    }
+
 
 }
