@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import braingame.amax.mybase.Models.DatabaseHelper;
-import braingame.amax.mybase.Models.DatabaseMethods;
 import braingame.amax.mybase.R;
 
 public class ActivityWords extends AppCompatActivity {
@@ -153,12 +152,6 @@ public class ActivityWords extends AppCompatActivity {
 
         pieData.setValueTextSize(10);
         pieChart.getLegend();
-        try {
-            DatabaseMethods.getTodayWord(mDb);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
 
     }
 

@@ -111,6 +111,7 @@ public class ActivityWordsEnRu extends AppCompatActivity {
                     loger.info("После правильного ответа iterator = " + newWordsIterator);
                     updateNewWord();
                     updateRepeatWord();
+                    finishSession();
                 } else {
                     toast("Неверно, вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
                     mInputRuAnswer.setText("");
@@ -146,6 +147,7 @@ public class ActivityWordsEnRu extends AppCompatActivity {
 
     private void showWord() {
         System.out.println("Сработал метод showWord()");
+        System.out.println(arrayList.toString());
         String strEn = arrayList.get(1);
         String strTrans = arrayList.get(2);
         String strPartOfSpeech = arrayList.get(4);
@@ -171,16 +173,24 @@ public class ActivityWordsEnRu extends AppCompatActivity {
             System.out.println("Сработал метод updateRepeatWord()");
             arrayList.clear();
             System.out.println("Массив очищен");
-            getTodayWord(mDb);
+            getTodayWord(mDb, arrayList);
             showWord();
             repeatWordsIterator++;
+            System.out.println("Значение repeatWordsIterator: " + repeatWordsIterator);
+            System.out.println("Значение countRepeatWords: " + countRepeatWords);
             loger.info("Метод check сравнил iterator и sumWord - они не равны, поэтому вызван метод showWord");
 
-        } else if(repeatWordsIterator>=countRepeatWords){
-            loger.info("Метод check сравнил iterator и sumWord - они равны, поэтому переменная iterator сброшена на 0");
-            createOneButtonAlertDialog("Вы успешно завершили запланированную сессию. \nВы правильно перевели " + totalScore + " слов из " + sumNewWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
         }
         System.out.println("Iterator = " + newWordsIterator + " / sumWord = " + sumNewWord);
+    }
+
+    private void finishSession() {
+        if(repeatWordsIterator>=countRepeatWords){
+            System.out.println("--- Сработало условие в методе updateRepeatWord()");
+            System.out.println("--- repeatWordsIterator равный: " + repeatWordsIterator + " Сравнился с countRepeatWords равный:" + countRepeatWords);
+            loger.info("Метод check сравнил iterator и sumWord - они равны, поэтому переменная iterator сброшена на 0");
+            createOneButtonAlertDialog("Вы повторили все необходимые слова и завершили сессию. \nВы правильно перевели " + totalScore + " слов из " + sumNewWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
+        }
     }
 
     private boolean checkAnswer(String[] arr) {

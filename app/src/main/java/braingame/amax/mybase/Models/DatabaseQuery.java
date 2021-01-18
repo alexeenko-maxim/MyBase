@@ -6,7 +6,7 @@ public class DatabaseQuery {
     public final static String QUERY_SELECT_NEW_WORD = "SELECT * FROM words WHERE priority = \"new\" ORDER BY random() LIMIT 1";
     public final static String QUERY_GET_TOTAL_WORDS = "SELECT COUNT(_id) FROM words";
     public final static String QUERY_GET_TOTAL_YOUR_WORDS = "SELECT COUNT(_id) FROM words WHERE tag = \"custom\"";
-    public final static String QUERY_GET_TOTAL_TODAY_WORDS = "SELECT COUNT(_id) FROM words WHERE dt LIKE ?";
+    public final static String QUERY_GET_TOTAL_TODAY_WORDS = "SELECT COUNT(_id) FROM words WHERE dt <= ? AND dt!= \"\"";
     public final static String QUERY_SELECT_MORE_ANSWER = "SELECT en,trans FROM words WHERE ru LIKE ?";
     public final static String QUERY_UPDATE_COUNTUP = "UPDATE words SET countup = countup + 1 WHERE en = \"";
     public final static String QUERY_UPDATE_COUNTDOWN = "UPDATE words SET countup = countup + 1 WHERE en = \"";

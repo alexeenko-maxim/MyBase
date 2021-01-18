@@ -76,6 +76,7 @@ public class DatabaseMethods extends DatabaseQuery{
         int increase = Integer.parseInt(String.valueOf(arrayList.get(7)));
         System.out.println(tempValue1);
         System.out.println(tempValue2);
+        System.out.println(increase);
         ContentValues cv = new ContentValues();
         cv.put(COLLUMN_NAMES_STAT, tempValue1);
         cv.put(COLLUMN_NAMES_COUNTUP, tempValue2);
@@ -157,16 +158,15 @@ public class DatabaseMethods extends DatabaseQuery{
     public static String nowDateTime(int increase) {
         @SuppressLint("SimpleDateFormat") SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Calendar calendar = new GregorianCalendar();
-        calendar.add(Calendar.MINUTE, increase);
+        calendar.add(Calendar.HOUR, +increase);
         System.out.println(sdf.format(calendar.getTime()));
         return sdf.format(calendar.getTime());
     }
 
-    public static ArrayList<String> getTodayWord(SQLiteDatabase mDb) {
+    public static void getTodayWord(SQLiteDatabase mDb, ArrayList arrayList) {
         String dt = nowDateTime(0);
         System.out.println("--- Вызван метод getTodayWord");
         System.out.println("--- dt = " + dt);
-        ArrayList<String> tempArr = new ArrayList<>();
         Cursor cursor = mDb.query(
                 true,
                 TABLE_NAME,
@@ -178,11 +178,11 @@ public class DatabaseMethods extends DatabaseQuery{
                 "1");
         cursor.moveToFirst();
         for (int i = 0; i < cursor.getColumnCount(); i++) {
-            tempArr.add(cursor.getString(i));
+            arrayList.add(cursor.getString(i));
         }
         cursor.close();
-        System.out.println("--- Метод getTodayWord вернул значение = " + tempArr);
-        return tempArr;
+        System.out.println("--- Метод getTodayWord установил значение tempArr = " + arrayList);
+
     }
 
     public static void getNewWord(SQLiteDatabase mDb, ArrayList arrayList, int newWordsIterator) {
@@ -216,7 +216,7 @@ public class DatabaseMethods extends DatabaseQuery{
         System.out.println("--- Вызван метод getWord");
         System.out.println("--- dt = " + dt);
         ArrayList<String> tempArr = new ArrayList<>();
-        Cursor cursor = mDb.rawQuery(QUERY_GET_TOTAL_TODAY_WORDS, new String[] { "%" + dt + "%"});
+        Cursor cursor = mDb.rawQuery(QUERY_GET_TOTAL_TODAY_WORDS, new String[] {dt});
         cursor.moveToFirst();
         for (int i = 0; i < cursor.getColumnCount(); i++) {
             tempArr.add(cursor.getString(i));
