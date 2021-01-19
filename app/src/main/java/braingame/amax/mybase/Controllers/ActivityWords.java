@@ -29,8 +29,6 @@ import braingame.amax.mybase.R;
 
 public class ActivityWords extends AppCompatActivity {
 
-    private SQLiteDatabase mDb;
-
     PieChart pieChart ;
     ArrayList<Entry> entries ;
     ArrayList<String> PieEntryLabels ;
@@ -207,7 +205,7 @@ public class ActivityWords extends AppCompatActivity {
     private void initDataBaseHelper() {
         System.out.println("--- Вызван метод initDataBaseHelper()");
         DatabaseHelper mDBHelper = new DatabaseHelper(this);
-        mDb = mDBHelper.getWritableDatabase();
+        SQLiteDatabase mDb = mDBHelper.getWritableDatabase();
     }
     @Override
     public void onBackPressed() {

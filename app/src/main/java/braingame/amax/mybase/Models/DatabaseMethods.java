@@ -69,7 +69,7 @@ public class DatabaseMethods extends DatabaseQuery{
         }
     }
 
-    public static void updateAfterTrueAnswer(SQLiteDatabase mDb, ArrayList arrayList, String en) {
+    public static void updateAfterTrueAnswer(SQLiteDatabase mDb, ArrayList<String> arrayList, String en) {
         System.out.println("--- Метод updateAfterTrueAnswer получил на вход значение = " + en);
         int tempValue1 = Integer.parseInt(String.valueOf(arrayList.get(5))) + 10;
         int tempValue2 = Integer.parseInt(String.valueOf(arrayList.get(7))) + 1;
@@ -92,13 +92,9 @@ public class DatabaseMethods extends DatabaseQuery{
         }
     }
 
-    public static void updateAfterFalseAnswer(SQLiteDatabase mDb, ArrayList arrayList, String en) {
+    public static void updateAfterFalseAnswer(SQLiteDatabase mDb, ArrayList<String> arrayList, String en) {
         System.out.println("--- Метод updateStatDown получил на вход значение = " + en);
         int countup = Integer.parseInt(String.valueOf(arrayList.get(7)));
-
-        if (countup!=0){
-
-        }
         int tempValue1 = Integer.parseInt(String.valueOf(arrayList.get(5))) - 10;
         int tempValue2 = Integer.parseInt(String.valueOf(arrayList.get(7))) - 1;
         System.out.println(tempValue1);
@@ -106,7 +102,7 @@ public class DatabaseMethods extends DatabaseQuery{
         ContentValues cv = new ContentValues();
         cv.put(COLLUMN_NAMES_STAT, tempValue1);
         cv.put(COLLUMN_NAMES_COUNTUP, tempValue2);
-        cv.put(COLLUMN_NAMES_PRIORITY, "learn");
+        cv.put(COLLUMN_NAMES_PRIORITY, "new");
         cv.put(COLLUMN_NAMES_DT, nowDateTime(0));
         try {
             mDb.update(TABLE_NAME,
@@ -163,7 +159,7 @@ public class DatabaseMethods extends DatabaseQuery{
         return sdf.format(calendar.getTime());
     }
 
-    public static void getTodayWord(SQLiteDatabase mDb, ArrayList arrayList) {
+    public static void getTodayWord(SQLiteDatabase mDb, ArrayList<String> arrayList) {
         String dt = nowDateTime(0);
         System.out.println("--- Вызван метод getTodayWord");
         System.out.println("--- dt = " + dt);
@@ -185,7 +181,7 @@ public class DatabaseMethods extends DatabaseQuery{
 
     }
 
-    public static void getNewWord(SQLiteDatabase mDb, ArrayList arrayList, int newWordsIterator) {
+    public static void getNewWord(SQLiteDatabase mDb, ArrayList<String> arrayList, int newWordsIterator) {
         if (newWordsIterator<=10) {
             String dt = nowDateTime(0);
             System.out.println("--- Вызван метод getNewWord");

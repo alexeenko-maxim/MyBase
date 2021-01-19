@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 import braingame.amax.mybase.Models.DatabaseHelper;
 import braingame.amax.mybase.Models.DatabaseMethods;
@@ -29,6 +30,8 @@ import static braingame.amax.mybase.Models.DatabaseQuery.USERNAME;
 
 public class ActivityWordsRuEn extends AppCompatActivity {
 
+    private static final Logger loger = Logger.getLogger(ActivityWordsRuEn.class.getName());
+
     SharedPreferences mUserName;
     private SQLiteDatabase mDb;
     TextView mTextViewRu, mUser, mBackToMenu, mExit;
@@ -36,10 +39,15 @@ public class ActivityWordsRuEn extends AppCompatActivity {
     Button mBtnCheckAnswer, mBtnMissWord;
 
     private static String[] answer;
-    private static int sumWord;
-    private static int iterator = 0;
+    private static int sumNewWord;
+    private static final int newWordsIterator = 0;
+    private static final int repeatWordsIterator = 0;
     private static int totalScore = 0;
+    private static int iterator = 0;
+    private static final int countRepeatWords = 0;
+
     private static final HashMap<Integer, ArrayList<String>> hashMap = new HashMap<>();
+    private static final ArrayList<String> arrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +56,9 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         hideStatusBar();
 
         mUserName = getSharedPreferences(USERNAME, MODE_PRIVATE);
+
         int mTotalWords = setSessionLength();
+
         initDataBaseHelper();
 
         mTextViewRu = findViewById(R.id.textViewRu);
@@ -103,7 +113,7 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         Bundle arguments = getIntent().getExtras();
         assert arguments != null;
         int mTotalWords = (int) arguments.get("select_session");
-        sumWord = mTotalWords * 2;
+        sumNewWord = mTotalWords * 2;
         System.out.println("--- Метод setSessionLength() вернул значение = " + mTotalWords);
         return mTotalWords;
     }
@@ -147,14 +157,14 @@ public class ActivityWordsRuEn extends AppCompatActivity {
 
     private void nextQuestion() {
         System.out.println("--- Вызван метод nextQuestion()");
-        if (iterator != sumWord) {
+        if (iterator != sumNewWord) {
             System.out.println("--- Метод nextQuestion() сравнил iterator и sumWord, они не равны");
             System.out.println("--- Метод nextQuestion() вызвал метод  showWord(iterator)");
             showWord(iterator);
         } else {
             iterator = 0;
             System.out.println("--- Метод nextQuestion() сравнил iterator и sumWord, они равны");
-            createOneButtonAlertDialog("Вы успешно завершили запланированную сессию. \nВы правильно перевели " + totalScore + " слов из " + sumWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
+            createOneButtonAlertDialog("Вы успешно завершили запланированную сессию. \nВы правильно перевели " + totalScore + " слов из " + sumNewWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
             System.out.println("--- Метод nextQuestion() вызвал метод createOneButtonAlertDialog");
         }
     }

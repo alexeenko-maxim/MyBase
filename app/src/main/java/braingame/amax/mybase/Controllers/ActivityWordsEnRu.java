@@ -2,7 +2,6 @@ package braingame.amax.mybase.Controllers;
 
 import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
@@ -59,22 +58,16 @@ public class ActivityWordsEnRu extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_words_enru);
-        //-
-        mUserName = getSharedPreferences(USERNAME, MODE_PRIVATE);
-        Bundle arguments = getIntent().getExtras();
-        //-Скрытие строки состояния-//
-        Window w = getWindow();
-        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //*
-        assert arguments != null;
-        int mTotalWords = (int) arguments.get("select_session");
-        sumNewWord = mTotalWords;
-        loger.info("--- Выбрана ссесия - " + mTotalWords);
-        loger.info("--- sumWord = " + sumNewWord);
+        hideStatusBar();
 
-        //-
-        DatabaseHelper mDBHelper = new DatabaseHelper(this);
-        mDb = mDBHelper.getWritableDatabase();
+        mUserName = getSharedPreferences(USERNAME, MODE_PRIVATE);
+
+        int mTotalWords = setSessionLength();
+
+        initDataBaseHelper();
+
+
+
 
         mTextViewEn = findViewById(R.id.textViewEn);
         mTextViewTrans = findViewById(R.id.textViewTrans);
@@ -87,13 +80,9 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         mExit = findViewById(R.id.exit);
         mUser.setText(mUserName.getString(USERNAME, String.valueOf(Context.MODE_PRIVATE)));
 
-        loger.info("Состояние переменной sumWord = " + sumNewWord);
-        loger.info("Состояние переменной mTotalWords = " + mTotalWords);
-        loger.info("Состояние переменной totalScore = " + totalScore);
-        loger.info("Состояние переменной answer = " + Arrays.toString(answer));
-
         countRepeatWords=getCountTodayWord(mDb);
         System.out.println("Количество слов которые нужно повторить сегодня: " + countRepeatWords);
+
         getNewWord(mDb, arrayList, sumNewWord);
         showWord();
         System.out.println(arrayList.toString());
@@ -214,12 +203,9 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         builder.setTitle("Поздравляем!");
         builder.setMessage(content);
         builder.setPositiveButton("OK",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog,
-                                        int which) {
-                        Intent intent = new Intent(getApplicationContext(), ActivityWords.class);
-                        startActivity(intent);
-                    }
+                (dialog, which) -> {
+                    Intent intent = new Intent(getApplicationContext(), ActivityWords.class);
+                    startActivity(intent);
                 });
         builder.show();
     }
@@ -229,7 +215,25 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         toastNull.setGravity(Gravity.CENTER, 0, 0);
         toastNull.show();
     }
-
+    private void hideStatusBar() {
+        System.out.println("--- Вызван метод hideStatusBar()");
+        Window w = getWindow();
+        w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+    private int setSessionLength() {
+        System.out.println("--- Вызван метод setSessionLength()");
+        Bundle arguments = getIntent().getExtras();
+        assert arguments != null;
+        int mTotalWords = (int) arguments.get("select_session");
+        sumNewWord = mTotalWords * 2;
+        System.out.println("--- Метод setSessionLength() вернул значение = " + mTotalWords);
+        return mTotalWords;
+    }
+    private void initDataBaseHelper() {
+        System.out.println("--- Вызван метод initDataBaseHelper()");
+        DatabaseHelper mDBHelper = new DatabaseHelper(this);
+        mDb = mDBHelper.getWritableDatabase();
+    }
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, ActivityWords.class);
