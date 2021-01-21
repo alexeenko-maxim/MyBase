@@ -2,10 +2,10 @@ package braingame.amax.mybase.Controllers;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -20,7 +20,7 @@ import braingame.amax.mybase.R;
 
 
 public class ActivityWordsAdd extends AppCompatActivity {
-    final String TAG = "INFO";
+    SharedPreferences sPref = null;
     SQLiteDatabase mDb;
     Button mBtnAddWord, mBtnGoBack;
     TextView mTextViewMenu, mTextViewUserName, mTextViewExit, mTextViewTotalWordInDB, mTextViewTotalYourWords, mTextViewTitleAddWord, mTextViewWordEn, mTextViewWordTrans, mTextViewWordRu, mTextViewWordPartOfSpeech;
@@ -34,14 +34,19 @@ public class ActivityWordsAdd extends AppCompatActivity {
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         initDataBaseHelper();
+
+        sPref = getSharedPreferences("name", MODE_PRIVATE);
+        String userName = sPref.getString("name", "");
+
         DatabaseMethods.getTotalWordInDB(mDb);
         temp = DatabaseMethods.getTotalWordInDB(mDb);
 
         mBtnAddWord = findViewById(R.id.btn_add_word);
         mBtnGoBack = findViewById(R.id.btn_go_back);
         mTextViewMenu = findViewById(R.id.back_to_menu);
-        mTextViewUserName = findViewById(R.id.user_name);
         mTextViewExit = findViewById(R.id.exit);
+        mTextViewUserName = findViewById(R.id.user_name);
+
         mTextViewTotalWordInDB = findViewById(R.id.total_words_inDB);
         mTextViewTotalYourWords = findViewById(R.id.total_your_words);
         mTextViewTitleAddWord = findViewById(R.id.addWord);
@@ -51,7 +56,7 @@ public class ActivityWordsAdd extends AppCompatActivity {
         mTextViewWordPartOfSpeech = findViewById(R.id.editTextPartOfSpeech);
         mTextViewTotalWordInDB.setText("Количество слов в базе данных: " + DatabaseMethods.getTotalWordInDB(mDb));
         mTextViewTotalYourWords.setText("Количество Вами добавленных слов: " + DatabaseMethods.getTotalYourWords(mDb));
-
+        mTextViewUserName.setText(userName);
         try {
             mBtnAddWord.setOnClickListener(v -> {
                 if (checkFillUp()) {
@@ -83,20 +88,12 @@ public class ActivityWordsAdd extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        mTextViewMenu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ActivityWordsAdd.this, ActivityMenu.class);
-                startActivity(intent);
-            }
+        mTextViewMenu.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityWordsAdd.this, ActivityMenu.class);
+            startActivity(intent);
         });
 
-        mTextViewExit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finishAffinity();
-            }
-        });
+        mTextViewExit.setOnClickListener(v -> finishAffinity());
     }//onCreate
 
     private boolean checkFillUp() {

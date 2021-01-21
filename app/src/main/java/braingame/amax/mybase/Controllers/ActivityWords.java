@@ -2,14 +2,15 @@ package braingame.amax.mybase.Controllers;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -28,13 +29,13 @@ import braingame.amax.mybase.Models.DatabaseHelper;
 import braingame.amax.mybase.R;
 
 public class ActivityWords extends AppCompatActivity {
-
+    SharedPreferences sPref = null;
+    TextView mTextViewMenu, mTextViewExit, mUserName;
     PieChart pieChart ;
     ArrayList<Entry> entries ;
     ArrayList<String> PieEntryLabels ;
     PieDataSet pieDataSet ;
     PieData pieData ;
-    Legend mLegen;
 
 
     @Override
@@ -45,6 +46,8 @@ public class ActivityWords extends AppCompatActivity {
         w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         initDataBaseHelper();
 
+        sPref = getSharedPreferences("name", MODE_PRIVATE);
+        String userName = sPref.getString("name", "");
 
 
 
@@ -68,66 +71,40 @@ public class ActivityWords extends AppCompatActivity {
         Button mBtnGoLearnRuEn = findViewById(R.id.btn_go_learnRuEn);
         Button mBtnGoAddWord = findViewById(R.id.btn_go_add_word);
 
-        mBtnGoLearnEnRu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectSessionEnRu.show();
-            }
+        mBtnGoLearnEnRu.setOnClickListener(v -> selectSessionEnRu.show());
+        mBtnGoLearnRuEn.setOnClickListener(v -> selectSessionRuEn.show());
+        mBtnGoAddWord.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityWords.this, ActivityWordsAdd.class);
+            startActivity(intent);
         });
-        mBtnGoLearnRuEn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectSessionRuEn.show();
-            }
-        });
-        mBtnGoAddWord.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ActivityWords.this, ActivityWordsAdd.class);
-                startActivity(intent);
-            }
-        });
-        mBtnSelectEasySessionEnRu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToActivityWordsEnruEasy();
-            }
-        });
-        mBtnSelectNormalSessionEnRu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToActivityWordsEnruNormal();
-            }
-        });
-        mBtnSelectHardSessionEnRu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToActivityWordsEnruHard();
-            }
-        });
-        mBtnSelectEasySessionRuEn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToActivityWordsRuenEasy();
-            }
-        });
-        mBtnSelectNormalSessionRuEn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToActivityWordsRuenNormal();
-            }
-        });
-        mBtnSelectHardSessionRuEn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                goToActivityWordsRuenHard();
-            }
-        });
+        mBtnSelectEasySessionEnRu.setOnClickListener(v -> goToActivityWordsEnruEasy());
+        mBtnSelectNormalSessionEnRu.setOnClickListener(v -> goToActivityWordsEnruNormal());
+        mBtnSelectHardSessionEnRu.setOnClickListener(v -> goToActivityWordsEnruHard());
+        mBtnSelectEasySessionRuEn.setOnClickListener(v -> goToActivityWordsRuenEasy());
+        mBtnSelectNormalSessionRuEn.setOnClickListener(v -> goToActivityWordsRuenNormal());
+        mBtnSelectHardSessionRuEn.setOnClickListener(v -> goToActivityWordsRuenHard());
 
         pieChart = findViewById(R.id.chart1);
 
+        createChart();
+
+        mTextViewMenu = findViewById(R.id.back_to_menu);
+        mTextViewExit = findViewById(R.id.exit);
+        mUserName = findViewById(R.id.user_name);
+        mUserName.setText(userName);
+
+        mTextViewExit.setOnClickListener(v -> {
+            finishAffinity();
+        });
+        mTextViewMenu.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityWords.this, ActivityMenu.class);
+            startActivity(intent);
+        });
+    }
+
+    private void createChart() {
         entries = new ArrayList<>();
-        PieEntryLabels = new ArrayList<String>();
+        PieEntryLabels = new ArrayList<>();
 
         AddValuesToPIEENTRY();
         AddValuesToPieEntryLabels();
@@ -137,7 +114,7 @@ public class ActivityWords extends AppCompatActivity {
         Legend legend = pieChart.getLegend();
 
         pieChart.setData(pieData);
-        pieChart.animateY(3000);
+        pieChart.animateY(2000);
         pieChart.setUsePercentValues(true);
         pieChart.setCenterText("Прогресс");
         pieChart.setDescription("");
@@ -150,9 +127,7 @@ public class ActivityWords extends AppCompatActivity {
 
         pieData.setValueTextSize(10);
         pieChart.getLegend();
-
     }
-
     public void AddValuesToPIEENTRY(){
 
         entries.add(new BarEntry(2f, 0));
@@ -160,9 +135,7 @@ public class ActivityWords extends AppCompatActivity {
         entries.add(new BarEntry(6f, 2));
         entries.add(new BarEntry(8f, 3));
         entries.add(new BarEntry(7f, 4));
-
     }
-
     public void AddValuesToPieEntryLabels(){
         PieEntryLabels.add("Перевод EN > RU");
         PieEntryLabels.add("Перевод RU > EN");
@@ -170,8 +143,6 @@ public class ActivityWords extends AppCompatActivity {
         PieEntryLabels.add("Фразовые глаголы");
         PieEntryLabels.add("Грамматика");
     }
-
-
     private void goToActivityWordsEnruEasy() {
         Intent intent = new Intent(this, ActivityWordsEnRu.class);
         intent.putExtra("select_session", 5);

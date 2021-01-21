@@ -1,7 +1,6 @@
 package braingame.amax.mybase.Controllers;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
@@ -31,13 +30,12 @@ import static braingame.amax.mybase.Models.DatabaseMethods.getNewWord;
 import static braingame.amax.mybase.Models.DatabaseMethods.getTodayWord;
 import static braingame.amax.mybase.Models.DatabaseMethods.updateAfterFalseAnswer;
 import static braingame.amax.mybase.Models.DatabaseMethods.updateAfterTrueAnswer;
-import static braingame.amax.mybase.Models.DatabaseQuery.USERNAME;
 
 public class ActivityWordsRuEn extends AppCompatActivity {
 
     private static final Logger loger = Logger.getLogger(ActivityWordsRuEn.class.getName());
 
-    SharedPreferences mUserName;
+    SharedPreferences sPref = null;
     private SQLiteDatabase mDb;
     TextView mTextViewRu, mUser, mBackToMenu, mExit;
     EditText mInputEnAnswer;
@@ -58,7 +56,8 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         setContentView(R.layout.activity_words_ruen);
         hideStatusBar();
 
-        mUserName = getSharedPreferences(USERNAME, MODE_PRIVATE);
+        sPref = getSharedPreferences("name", MODE_PRIVATE);
+        String userName = sPref.getString("name", "");
 
         int mTotalWords = setSessionLength();
 
@@ -71,7 +70,7 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         mUser = findViewById(R.id.user_name);
         mBackToMenu = findViewById(R.id.back_to_menu);
         mExit = findViewById(R.id.exit);
-        mUser.setText(mUserName.getString(USERNAME, String.valueOf(Context.MODE_PRIVATE)));
+        mUser.setText(userName);
 
         countRepeatWords = getCountTodayWord(mDb);
         System.out.println("Количество слов которые нужно повторить сегодня: " + countRepeatWords);
@@ -96,7 +95,6 @@ public class ActivityWordsRuEn extends AppCompatActivity {
                     loger.info("После правильного ответа iterator = " + newWordsIterator);
                     updateNewWord();
                     updateRepeatWord();
-
                     finishSession();
                 } else {
                     toast("Неверно, вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer) + ", " + getAnalogAnswer(mDb,arrayList.get(3)).toString(), Toast.LENGTH_LONG);
@@ -128,6 +126,14 @@ public class ActivityWordsRuEn extends AppCompatActivity {
                 updateNewWord();
             }
 
+        });
+
+        mExit.setOnClickListener(v -> {
+            finishAffinity();
+        });
+        mBackToMenu.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityWordsRuEn.this, ActivityMenu.class);
+            startActivity(intent);
         });
     }//----------OnCreated
 

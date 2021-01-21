@@ -33,10 +33,10 @@ public class ActivityRegistration extends Activity {
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //---Обьявление переменных с привязкой
-        final EditText mInputPhoneField = findViewById(R.id.phone_number_text);
-        final Button mButtonSendPhone = findViewById(R.id.button_send_phone);
-        final ProgressBar mProgressBar = findViewById(R.id.progress_Bar);
-        final EditText mUserNameField = findViewById(R.id.input_userName_field);
+        EditText mInputPhoneField = findViewById(R.id.phone_number_text);
+        Button mButtonSendPhone = findViewById(R.id.button_send_phone);
+        ProgressBar mProgressBar = findViewById(R.id.progress_Bar);
+        EditText mUserNameField = findViewById(R.id.input_userName_field);
         //---
         
         //---События по нажатию кнопки Зарегистрировать
@@ -87,6 +87,7 @@ public class ActivityRegistration extends Activity {
                                     intent.putExtra("mobile", mInputPhoneField.getText().toString());
                                     intent.putExtra("verificationId", verificationId);
                                     intent.putExtra("user", mUserNameField.getText());
+                                    System.out.println(mUserNameField.getText());
                                     startActivity(intent);
                                 }
                             }

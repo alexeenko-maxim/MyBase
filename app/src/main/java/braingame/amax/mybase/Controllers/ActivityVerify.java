@@ -17,10 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
@@ -44,12 +41,20 @@ public class ActivityVerify extends AppCompatActivity {
         setContentView(R.layout.activity_verify);
         Window w = getWindow();
         w.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        final Intent intent = getIntent();
-        final String userName = intent.getStringExtra("user");
+
+
+        Bundle arguments = getIntent().getExtras();
+        assert arguments != null;
+        String name = String.valueOf(arguments.get("user"));
+        System.out.println("Активность activity_verify получила значение из активности activity_registration: " + name);
+
+
 
         mSettings = getSharedPreferences(USERNAME, MODE_PRIVATE);
-        final SharedPreferences.Editor prefEditor = mSettings.edit();
+        SharedPreferences.Editor prefEditor = mSettings.edit();
 
+        prefEditor.putString(USERNAME, name);
+        prefEditor.apply();
 
         TextView mTextMobile = findViewById(R.id.text_mobile);
 
@@ -73,47 +78,48 @@ public class ActivityVerify extends AppCompatActivity {
 
         verificationId = getIntent().getStringExtra("verificationId");
 
-        mVerifyBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //---Проверка на пустые поля---
-                if (checkIsEmpty(mInputCode1,mInputCode2,mInputCode3,mInputCode4,mInputCode5,mInputCode6)) {
-                    Toast.makeText(ActivityVerify.this, "Введите проверочный код", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                //---Склейка всех полей в одну строку---
-                String code = mInputCode1.getText().toString() +
-                        mInputCode2.getText().toString() +
-                        mInputCode3.getText().toString() +
-                        mInputCode4.getText().toString() +
-                        mInputCode5.getText().toString() +
-                        mInputCode6.getText().toString();
+        try {
+            mVerifyBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //---Проверка на пустые поля---
+                    if (checkIsEmpty(mInputCode1, mInputCode2, mInputCode3, mInputCode4, mInputCode5, mInputCode6)) {
+                        Toast.makeText(ActivityVerify.this, "Введите проверочный код", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    //---Склейка всех полей в одну строку---
+                    String code = mInputCode1.getText().toString() +
+                            mInputCode2.getText().toString() +
+                            mInputCode3.getText().toString() +
+                            mInputCode4.getText().toString() +
+                            mInputCode5.getText().toString() +
+                            mInputCode6.getText().toString();
 
-                if (verificationId != null) {
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    mVerifyBtn.setVisibility(View.INVISIBLE);
-                    PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(verificationId, code);
-                    FirebaseAuth.getInstance().signInWithCredential(phoneAuthCredential)
-                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
+                    if (verificationId != null) {
+                        mProgressBar.setVisibility(View.VISIBLE);
+                        mVerifyBtn.setVisibility(View.INVISIBLE);
+                        PhoneAuthCredential phoneAuthCredential = PhoneAuthProvider.getCredential(verificationId, code);
+                        FirebaseAuth.getInstance().signInWithCredential(phoneAuthCredential)
+                                .addOnCompleteListener(task -> {
                                     mProgressBar.setVisibility(View.GONE);
                                     mVerifyBtn.setVisibility(View.VISIBLE);
                                     if (task.isSuccessful()) {
-                                        prefEditor.putString(USERNAME, userName);
+                                        prefEditor.putString(USERNAME, name);
                                         prefEditor.apply();
-                                        Intent intent = new Intent(getApplicationContext(), ActivityVerifyCongrad.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intent);
-                                    }
-                                    else {
+                                        Intent intent1 = new Intent(ActivityVerify.this.getApplicationContext(), ActivityVerifyCongrad.class);
+                                        intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        ActivityVerify.this.startActivity(intent1);
+                                    } else {
                                         Toast.makeText(ActivityVerify.this, "Введен неверный проверочный код", Toast.LENGTH_SHORT).show();
                                     }
-                                }
-                            });
+                                });
+                    }
                 }
-            }
-        });
+            });
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         try {
             findViewById(R.id.text_resend).setOnClickListener(new View.OnClickListener() {

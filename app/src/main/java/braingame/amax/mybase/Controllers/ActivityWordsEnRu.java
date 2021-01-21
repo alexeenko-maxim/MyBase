@@ -1,7 +1,6 @@
 package braingame.amax.mybase.Controllers;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.SQLException;
@@ -22,7 +21,6 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 import braingame.amax.mybase.Models.DatabaseHelper;
-import braingame.amax.mybase.Models.DatabaseQuery;
 import braingame.amax.mybase.R;
 
 import static braingame.amax.mybase.Models.DatabaseMethods.getCountTodayWord;
@@ -36,7 +34,7 @@ public class ActivityWordsEnRu extends AppCompatActivity {
 
     private static final Logger loger = Logger.getLogger(ActivityWordsEnRu.class.getName());
 
-    SharedPreferences mUserName;
+    SharedPreferences sPref = null;
     private SQLiteDatabase mDb;
     TextView mTextViewEn, mUser, mBackToMenu, mExit, mTextViewTrans, mTextViewPartOfSpeech;
     EditText mInputRuAnswer;
@@ -57,7 +55,8 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         setContentView(R.layout.activity_words_enru);
         hideStatusBar();
 
-        mUserName = getSharedPreferences(DatabaseQuery.USERNAME, MODE_PRIVATE);
+        sPref = getSharedPreferences("name", MODE_PRIVATE);
+        String userName = sPref.getString("name", "");
 
         int mTotalWords = setSessionLength();
 
@@ -75,7 +74,7 @@ public class ActivityWordsEnRu extends AppCompatActivity {
         mUser = findViewById(R.id.user_name);
         mBackToMenu = findViewById(R.id.back_to_menu);
         mExit = findViewById(R.id.exit);
-        mUser.setText(mUserName.getString(DatabaseQuery.USERNAME, String.valueOf(Context.MODE_PRIVATE)));
+        mUser.setText(userName);
 
         countRepeatWords=getCountTodayWord(mDb);
         System.out.println("Количество слов которые нужно повторить сегодня: " + countRepeatWords);
@@ -128,6 +127,13 @@ public class ActivityWordsEnRu extends AppCompatActivity {
                 updateNewWord();
             }
 
+        });
+        mExit.setOnClickListener(v -> {
+            finishAffinity();
+        });
+        mBackToMenu.setOnClickListener(v -> {
+            Intent intent = new Intent(ActivityWordsEnRu.this, ActivityMenu.class);
+            startActivity(intent);
         });
     }//----------OnCreated
 
