@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -220,6 +221,35 @@ public class DatabaseMethods extends DatabaseQuery{
         cursor.close();
         System.out.println("--- Метод getWord() вернул значение = " + tempArr);
         return Integer.parseInt(tempArr.get(0));
+    }
+
+    public static ArrayList<String> getAnalogAnswer(SQLiteDatabase mDb, String ruAnswer){
+        System.out.println("Вызван метод getAnalogAnswer со значением: " + ruAnswer);
+        ArrayList<String> tempArr = new ArrayList<>();
+        String[] tempArr2 = ruAnswer.split(", ");
+        System.out.println("ruAnswer преобразовал строку в: " + Arrays.toString(tempArr2));
+
+            Cursor cursor = mDb.query(
+                    false,
+                    TABLE_NAME,
+                    new String[] {COLLUMN_NAMES_EN},
+                    COLLUMN_NAMES_RU + " LIKE ?", new String[] {"%" + tempArr2[0] + "%"},
+                    null,
+                    null,
+                    null,
+                    null);
+            cursor.moveToFirst();
+
+            while (cursor.moveToNext()) {
+                int i = 0;
+                tempArr.add(cursor.getString(i));
+                i++;
+            }
+            cursor.close();
+
+        System.out.println("Метод getAnalogAnswer вернул следующие аналоги: " + tempArr.toString());
+
+     return tempArr;
     }
 
 

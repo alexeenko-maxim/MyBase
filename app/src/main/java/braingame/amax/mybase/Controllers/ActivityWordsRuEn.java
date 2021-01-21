@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -18,14 +19,18 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Objects;
 import java.util.logging.Logger;
 
 import braingame.amax.mybase.Models.DatabaseHelper;
 import braingame.amax.mybase.Models.DatabaseMethods;
 import braingame.amax.mybase.R;
 
+import static braingame.amax.mybase.Models.DatabaseMethods.getAnalogAnswer;
+import static braingame.amax.mybase.Models.DatabaseMethods.getCountTodayWord;
+import static braingame.amax.mybase.Models.DatabaseMethods.getNewWord;
+import static braingame.amax.mybase.Models.DatabaseMethods.getTodayWord;
+import static braingame.amax.mybase.Models.DatabaseMethods.updateAfterFalseAnswer;
+import static braingame.amax.mybase.Models.DatabaseMethods.updateAfterTrueAnswer;
 import static braingame.amax.mybase.Models.DatabaseQuery.USERNAME;
 
 public class ActivityWordsRuEn extends AppCompatActivity {
@@ -40,13 +45,11 @@ public class ActivityWordsRuEn extends AppCompatActivity {
 
     private static String[] answer;
     private static int sumNewWord;
-    private static final int newWordsIterator = 0;
-    private static final int repeatWordsIterator = 0;
+    private static int newWordsIterator = 0;
+    private static int repeatWordsIterator = 0;
     private static int totalScore = 0;
-    private static int iterator = 0;
-    private static final int countRepeatWords = 0;
+    private static int countRepeatWords = 0;
 
-    private static final HashMap<Integer, ArrayList<String>> hashMap = new HashMap<>();
     private static final ArrayList<String> arrayList = new ArrayList<>();
 
     @Override
@@ -70,27 +73,39 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         mExit = findViewById(R.id.exit);
         mUser.setText(mUserName.getString(USERNAME, String.valueOf(Context.MODE_PRIVATE)));
 
-        DatabaseMethods.createWordsArray(mDb, hashMap, mTotalWords);
-        nextQuestion();
+        countRepeatWords = getCountTodayWord(mDb);
+        System.out.println("Количество слов которые нужно повторить сегодня: " + countRepeatWords);
+
+        getNewWord(mDb, arrayList, sumNewWord);
+        showWord();
+        System.out.println(arrayList.toString());
+
+        getAnalogAnswer(mDb,arrayList.get(3));
+
 
         try {
             mBtnCheckAnswer.setOnClickListener(v -> {
                 if (mInputEnAnswer.length() < 1) toast("Введите ответ", Toast.LENGTH_LONG);
-                else if (checkAnswer(answer)) {
+                else if (checkAnswer(answer) | checkAnalogAnswer()) {
                     toast("Правильно", Toast.LENGTH_SHORT);
                     totalScore++;
                     System.out.println("Количество правильных ответов = " + totalScore);
                     mInputEnAnswer.setText("");
-//                    updateAfterTrueAnswer(mDb, hashMap, Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                    iterator++;
-                    System.out.println(iterator);
-                    nextQuestion();
+                    updateAfterTrueAnswer(mDb, arrayList, arrayList.get(1));
+                    newWordsIterator++;
+                    loger.info("После правильного ответа iterator = " + newWordsIterator);
+                    updateNewWord();
+                    updateRepeatWord();
+
+                    finishSession();
                 } else {
-                    toast("Неверно, вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
+                    toast("Неверно, вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer) + ", " + getAnalogAnswer(mDb,arrayList.get(3)).toString(), Toast.LENGTH_LONG);
                     mInputEnAnswer.setText("");
-                    DatabaseMethods.updateStatDown(mDb, hashMap, Objects.requireNonNull(hashMap.get(iterator)).get(1));
-                    iterator++;
-                    nextQuestion();
+                    updateAfterFalseAnswer(mDb, arrayList, arrayList.get(1));
+                    newWordsIterator++;
+                    loger.info("После неправильного ответа iterator = " + newWordsIterator);
+                    updateNewWord();
+                    updateRepeatWord();
                 }
             });
         }
@@ -99,13 +114,62 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         }
 
         mBtnMissWord.setOnClickListener(v -> {
-            DatabaseMethods.updateStatDown(mDb, hashMap, Objects.requireNonNull(hashMap.get(iterator)).get(1));
-            System.out.println(Objects.requireNonNull(hashMap.get(iterator)).get(1));
-            toast("Вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
-            iterator++;
-            nextQuestion();
-        });
+            try {
+                updateAfterFalseAnswer(mDb, arrayList, arrayList.get(1));
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+            finally {
+                System.out.println(arrayList.get(1));
+                toast("Вот некоторые варианты перевода: " + "\n" + Arrays.toString(answer), Toast.LENGTH_LONG);
+                newWordsIterator++;
+                loger.info("После пропуска ответа iterator = " + newWordsIterator);
+                updateNewWord();
+            }
 
+        });
+    }//----------OnCreated
+
+
+    private void createOneButtonAlertDialog(String content) {
+        System.out.println("--- Вызван метод createOneButtonAlertDialog");
+        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityWordsRuEn.this);
+        builder.setTitle("Поздравляем!");
+        builder.setMessage(content);
+        builder.setPositiveButton("OK",
+                (dialog, which) -> {
+                    Intent intent = new Intent(getApplicationContext(), ActivityWords.class);
+                    startActivity(intent);
+                });
+        builder.show();
+    }
+
+    private boolean checkAnswer(String[] arr) {
+        System.out.println("--- Вызван метод checkAnswer() значение на входе  = " + Arrays.toString(arr));
+        boolean temp = false;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i].contentEquals(mInputEnAnswer.getText())) {
+                System.out.println("--- Метод checkAnswer() сравнивает " + arr[i] + " c " + mInputEnAnswer.getText());
+                temp = true;
+                break;
+            } else temp = false;
+        }
+        System.out.println("--- Метод checkAnswer() вернул значение = " + temp);
+        return temp;
+    }
+
+    private boolean checkAnalogAnswer (){
+        System.out.println("--- Вызван метод checkAnalogAnswer() значение на входе  = ");
+        ArrayList<String> tempArr = getAnalogAnswer(mDb,arrayList.get(3));
+        boolean temp = false;
+        for (int i =0; i<tempArr.size(); i++){
+            if (tempArr.get(i).contentEquals(mInputEnAnswer.getText())) {
+                temp = true;
+                break;
+            }
+        }
+        return temp;
     }
 
     private int setSessionLength() {
@@ -130,56 +194,15 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         mDb = mDBHelper.getWritableDatabase();
     }
 
-    private boolean checkAnswer(String[] arr) {
-        System.out.println("--- Вызван метод checkAnswer() значение на входе  = " + Arrays.toString(arr));
-        boolean temp = false;
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i].contentEquals(mInputEnAnswer.getText())) {
-                System.out.println("--- Метод checkAnswer() сравнивает " + arr[i] + " c " + mInputEnAnswer.getText());
-                temp = true;
-                break;
-            } else temp = false;
-        }
-        System.out.println("--- Метод checkAnswer() вернул значение = " + temp);
-        return temp;
-    }
+    private void showWord() {
+        System.out.println("Сработал метод showWord()");
+        System.out.println(arrayList.toString());
+        String strRu = arrayList.get(3);
+        answer = arrayList.get(1).split(", ");
+        loger.info("Метод showWord уснановил згачение переменной answer = " + Arrays.toString(answer));
+        mTextViewRu.setText(strRu);
+        System.out.println(Arrays.toString(answer));
 
-    private void showWord(int index) {
-        System.out.println("--- Метод showWord получил на вход значение = " + index);
-        String str = Objects.requireNonNull(hashMap.get(index)).get(3);
-        String[] temp = Objects.requireNonNull(hashMap.get(index)).get(3).split(", ");
-        String question = temp[0];
-        answer = (Objects.requireNonNull(hashMap.get(index)).get(1) + ", " + Objects.requireNonNull(hashMap.get(index)).get(2)).split(", ");
-        System.out.println("--- Метод showWord задал значение переменной answer = " + Arrays.toString(answer));
-        mTextViewRu.setText(str);
-        System.out.println("--- Метод showWord установил значение поля mTextViewRu = " + str);
-    }
-
-    private void nextQuestion() {
-        System.out.println("--- Вызван метод nextQuestion()");
-        if (iterator != sumNewWord) {
-            System.out.println("--- Метод nextQuestion() сравнил iterator и sumWord, они не равны");
-            System.out.println("--- Метод nextQuestion() вызвал метод  showWord(iterator)");
-            showWord(iterator);
-        } else {
-            iterator = 0;
-            System.out.println("--- Метод nextQuestion() сравнил iterator и sumWord, они равны");
-            createOneButtonAlertDialog("Вы успешно завершили запланированную сессию. \nВы правильно перевели " + totalScore + " слов из " + sumNewWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
-            System.out.println("--- Метод nextQuestion() вызвал метод createOneButtonAlertDialog");
-        }
-    }
-
-    private void createOneButtonAlertDialog(String content) {
-        System.out.println("--- Вызван метод createOneButtonAlertDialog");
-        AlertDialog.Builder builder = new AlertDialog.Builder(ActivityWordsRuEn.this);
-        builder.setTitle("Поздравляем!");
-        builder.setMessage(content);
-        builder.setPositiveButton("OK",
-                (dialog, which) -> {
-                    Intent intent = new Intent(getApplicationContext(), ActivityWords.class);
-                    startActivity(intent);
-                });
-        builder.show();
     }
 
     private void toast(String s, int time) {
@@ -189,10 +212,43 @@ public class ActivityWordsRuEn extends AppCompatActivity {
         toastNull.show();
     }
 
+    private void updateNewWord() {
+        if (newWordsIterator <= sumNewWord) {
+            System.out.println("Сработал метод updateNewWord()");
+            arrayList.clear();
+            DatabaseMethods.getNewWord(mDb, arrayList, newWordsIterator);
+            showWord();
+        }
+    }
+
+    private void updateRepeatWord() {
+        if (newWordsIterator > sumNewWord) {
+            System.out.println("Сработал метод updateRepeatWord()");
+            arrayList.clear();
+            System.out.println("Массив очищен");
+            getTodayWord(mDb, arrayList);
+            showWord();
+            repeatWordsIterator++;
+            System.out.println("Значение repeatWordsIterator: " + repeatWordsIterator);
+            System.out.println("Значение countRepeatWords: " + countRepeatWords);
+            loger.info("Метод check сравнил iterator и sumWord - они не равны, поэтому вызван метод showWord");
+
+        }
+        System.out.println("Iterator = " + newWordsIterator + " / sumWord = " + sumNewWord);
+    }
+
+    private void finishSession() {
+        if (repeatWordsIterator >= countRepeatWords) {
+            System.out.println("--- Сработало условие в методе updateRepeatWord()");
+            System.out.println("--- repeatWordsIterator равный: " + repeatWordsIterator + " Сравнился с countRepeatWords равный:" + countRepeatWords);
+            loger.info("Метод check сравнил iterator и sumWord - они равны, поэтому переменная iterator сброшена на 0");
+            createOneButtonAlertDialog("Вы повторили все необходимые слова и завершили сессию. \nВы правильно перевели " + totalScore + " слов из " + sumNewWord + "\nНажмите \"ОК\" для продолжения и спланируйте новую ссесию");
+        }
+    }
+
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(this, ActivityWords.class);
         startActivity(intent);
     }
-
 }
